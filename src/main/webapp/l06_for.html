@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>자료형과 반복문</title>
+</head>
+<body>
+  <h1>자료형을 반복문으로 검사해 보자</h1>
+<!--  <h2>js의 자료형 2가지</h2>-->
+  <h2>Array</h2>
+  <h2>Object</h2>
+
+  <h3>문제1 다음 리스트의 모든 값을 더하세요~</h3>
+  <ul id="ex1">
+    <li>1</li> <!-- "/n" 줄바꿈 포함, 텍스트 노드다. 공백포함-->
+    <li>4</li>
+    <li>9</li>
+    <li>16</li>
+    <li>25</li>
+    <li>36</li>
+    <li>49</li>
+  </ul>
+  <p id="ex1Result"></p>
+  <!-- 수업들으면알겠지? 절대모른다. 문제를 풀어본 사람만이 안다 // js와 java 유사하다 -->
+  <script> // 스크립트도 노드(태그)로 취급해서 순서대로 실행된다.
+    // document
+    // ★ dom traveling 의 결과로 단수가 나오는 것과 복수가 나오는 것 암기
+    // 단수 : id,formName(==forms["formName"]), parentNode(부모노드(부모태그))
+    // 단수함수(dom traveling) : getElementById(id), querySelector("cssSelector")  // '.(점) : 클래스' '# : 아이디' '> : 자식' '(공백): 자손' '+ : 형제' '[]'..
+    // 복수 : children(자식노드_태그로만 된 노드) childNodes(텍스트노드(텍스트)+자식노드) => HTMLCollection 배열이 반환 (HTMLCollection 오래되서 필드가 좀 부족하다)
+    // 복수함수 : getElementsByTagName("tag"), getElementsByClassName("class") => HTMLCollection
+    // , querySelectorAll("") => NodeList(내부반복문을 포함하는 배열 타입)
+
+    // parentNode,children,childNodes : 해당 노드에 포함된 필드 (새롭게 탐색하지 않는다.)(해당노드가 어느 노드에 포함되는지 파악하기위해(부모자식관계를 파악하기 위해서 존재))
+    // => querySelector보다 검색속도가 빠르다
+    // querySelector : 전체를 돔 트래블링
+
+    console.log(ex1.children); // [li, li, ..., li]
+    // children : 자식 노드(태그)를 찾아서 배열을 만든다.
+    // ul의 자식 노드 li태그 안에 공백을 제외한다 // ul의 자식!! li만 찾는다.
+
+    console.log(ex1.getElementsByTagName("li")); // [li, li, ..., li]
+    // ul 안에 있는 모든 li 노드(태그)를 찾는 것 // ul에 있는 li 전부다 찾는다.
+
+    document.getElementById("ex1"); // HTML COllection - 예전 배열이라 필드가 부족하다
+    console.log(`ex1.children[5].innerText : ${ex1.children[5].innerText}`); // 36
+    console.log([1,2,3,4,5]); // Array - 보다 최신 배열이라서 필드(속성)가 많다.
+
+    // li에 써진 모든 text를 수로 더한 결과를 출력하세요 (심화 => 해결하면 배로 실력이 는다)
+    // 힌트) Number(문자열) parseInt(문자열) parseFloat(문자열) : 문자열 수로 형변환
+
+    // 문제1
+    // 힌트) for in 반복문: Array 필드가 추가로 나와서 index가 아닌 필드(길이, item(), namedItem())가 나온다. -> 결과 undefined가 된다.
+    // for in 반복문 말고 for of 반복문 사용하기
+    let sum1=0
+    const ex1Lis = ex1.children; // [li, li, li, li, li, li, li] // ex.childNodes 하면 안된다!! - 공백포함되서
+    for(let i of ex1Lis) { // Iterator : 다음요소가 있는지 확인. 향상된 반복문 // 해당 배열이 Iterable 해야 사용가능
+      console.log(i) // li  - 이미 출력되서 만들어진 객체 == 노드 == 노드객체!!!!??
+      sum1+=Number(i.innerText);
+    }
+    // innerHTML : 해당 노드의 자식으로 문자열을 노드 객체로 만들어 추가하는 필드
+    // innerText : 해당 노드의 자식으로 문자열을 텍스트노드로 만들어 추가하는 필드
+    ex1Result.innerHTML = `위의 모든 값을 더한 결과 : <b>${sum1}</b>`;
+
+  </script>
+
+  <h3 id="ex2H3" onmouseenter="this.style.color='blue'">
+    문제2) li에 작성된 문자열을 li의 color 로 변경하세요!
+    (마우스포인터가 li에 들어오면,나가면 다시 블랙으로 변경)
+  </h3>
+
+   <ul id="ex2">
+    <li>red</li>
+    <li>lightblue</li>
+    <li>rgb(100,2000,150)</li> <!-- 0~255 -> 16*16 -> 2^4 2^4 승 -> 2^8 승 -> 1byte / 1byte 3개로 색을 표현한것 / rgb 빛의 삼원색-->
+    <li>yellow</li>
+    <li>rgba(255,255,255,.5)</li> <!-- a : 투명도 -->
+    <li>#00FF11</li> <!-- 16진수 표현 / R(#00) G(FF) B(11) -->
+    <li>#0F1</li> <!-- == #00FF11 동일하면 줄여서 표현 -->
+  </ul>
+  <script>
+    // css CascadingStyleSheet : 브라우저에 노드를 그래픽으로 나타내는 명세서
+    // 1. CasCading : 부모 요소의 스타일을 자식이 따르는 것
+    // 2. CasCading : 선택자의 우선순위가 존재한다. tag(멸치) 1점, class(.)(정어리) 10점, id(#)(상어) 100점, inline(배) 1000점, !important 10000점
+    // 3. Cascading : 우선순위  External Style(다운) < Internal Style(내부 style) < Inline Style(요소에 저장)
+    // Inline Style : 요소에 직접 쓰거나 자바스크립트로 요소를 찾아서 스타일을 주면 인라인에 적용된다. (js로 요소를 동적으로 만들기 위해 존재)
+    // 브라우저가 HTML을 노드 객체로 만들기 전에 꼭 Dom Tree 를 생성해서 CSS 명세서(css 선택자의 dom trveling)를 이용해 그래픽(화면)을 그린다. -> 돔이 어떻게 생긴지, 노드 구성이 알아야 그림을 그릴 수 있다
+    // 선택자를 통해 돔트래블링을 할 수 있다.
+    // ★스타일은 노드 개체의 속성이다! => 그래야지 노드를 그릴수있는것. 스타일 줄수있는 것.
+    ex2H3.style.color="purple";
+
+    // 노드 개체의 이벤트 속성(이벤트속성 : GUI가 동작하기 위한 최소의 장치 MouseEvent) // 이벤트 속성이 없으면 GUI가 동작하지 않는다 // 이벤트 종류 https://www.w3schools.com/jsref/dom_obj_event.asp , https://www.w3schools.com/jsref/obj_events.asp
+    // 브라우저는 브라우저에 발생하는 모든 것을 이벤트로 정의한다.(EventListener 가 너무 훌륭하게 동작해서 모든 이벤트를 처리함) // 노드에 발생하는 모든 것 - 이벤트
+    // EventListener : 이벤트가 발생하는 것을 무한히 대기(무한반복문), 멀티스레드로 처리하는 객체 (비동기 : 순서상관없이)
+    // EventListener 는 멀티스레드(비동기)로 동작하지만 물리적으로는 1 thread 를 멀티스레드 처럼 효율적으로 사용하는 상태이다.
+    // => 이런 상태의 스레드를 경량 스레드라 부른다. node.js 가 EventListener 경량스레드를 사용하기 위해 등장 했다.
+
+    /*Calc() {
+      this.sum=function(a,b){} // 매개변수 a,b 를 안쓰면 undefined가 된다.
+      this.onclick=function(e){}
+    }*/
+
+    // ex2H3.onclick=function(e){} // 이벤트 필드(onclick) = 함수 대입 // 이벤트가 발생될때 호출하는 함수 == 콜백함수 // onclick=function(e){} : onclick 이벤트함수
+    ex2H3.onclick=function(e){ // 정의 or 재정의 (= 대입하는 것) // 매개변수 e를 안쓰면 undefined 가 된다.
+      // console.log("눌렀다!!");
+      // ex2H3.style.color="purple";
+      console.log(e); // 이벤트에 대한 정보
+      console.log(e.target); // 이벤트가 발생한 대상
+      this.style.color="purple"; // this : onclick이 발생한 객체의 필드 접근자(2x2H3 노드개체(객체))    // 객체의 필드를 접근하는것. onclick이 발생한 객체의 필드
+      e.target.style.color='purple'; // e.target == this == ex2H3
+    }
+    // 이벤트 필드 (onclick)는 함수고 콜백함수를 재정의 해야한다. (재정의 한 함수가 이벤트가 발생할 때 마다 호출(call)된다.)
+    // 요소 (tag요소) // 노드객체 == 노드개체 == 노드 /
+    // 객체는 필드(속성, 프로퍼티)를 가지고 있다
+    // 노드 개체 필드(css, event) - 그래야 화면에 뿌리고. 이벤트가 발생한다.
+
+    const ex2Lis = ex2.children;
+    console.log(ex2Lis);
+    for (let i=0; i<ex2Lis.length; i++){
+      let li=ex2Lis[i]
+      // li.style.color=(li.innerText);
+      li.onmouseenter=function(e){ // onmouseenter 이벤트 함수 => onmouseenter=function(e){} => 이벤트 함수 재정의 하기 // e.target 이벤트가 발생한 대상
+        this.style.color=(li.innerText);
+      }
+      li.onmouseleave=function(e){
+        this.style.color="#000"; // rgb(0,0,0)
+      }
+
+      // css : hover (mouseleave, mouseenter 둘다포함)
+    }
+
+
+    // ex2.children; // [li,li,li,...,li]
+    // for(let l of ex2.children) { // l=li
+    //   l.onmouseenter=function(e) {
+    //     e.target.style.color=l.innerText;
+    //   }
+    //   l.addEventListener("mouseleave", function(){
+    //     l.style.color='#000';
+    //   })
+    // }
+    //
+    //   ex2H3.onmouseenter=function (e){
+    //   this.style.color='blue'; //==ex2H3
+    // }
+    //   ex2H3.onmouseleave=function(e){
+    //   this.style.color='#000';
+    // }
+
+  </script>
+
+  <h3>문제3 다음 리스트에서 수가 아닌 것을 제외한 모든 값을 더하세요~(힌트 NaN)</h3>
+  <ul id="ex3">
+    <li>18.33em</li> <!-- 18.33em 값 포함하는 계산. 포함안하는 계산 둘다. 해보기 -->
+    <li>1</li>
+    <li>4.3</li>
+    <li>9.00</li>
+    <li>십오</li>
+    <li>16</li>
+    <li>25.12</li>
+    <li>36</li>
+    <li>null</li>
+    <li>49</li>
+  </ul>
+  <script>
+    sum=0;
+    const ex3Lis = ex3.children;
+    // console.log(ex3Lis); // 항상 먼저 체크하기
+    console.log('문제3');
+    for(let li of ex3Lis) {
+      // console.log(li.innerText + ":" + parseFloat(li.innerText));
+      console.log(li.innerText, parseFloat(li.innerText)); // 값 + -> , 쉼표로 대체할 수 있다
+      console.log(li.innerText, Number(li.innerText));
+
+      let num = parseFloat(li.innerText); // 실수도 반영 // 텍스트가 붙으면 텍스트를 제외한 수로 변환
+
+      // ●문제해설 - 강의동영상 다시 참고
+      // ▣ 18.33em 포함하는 경우
+      // if(num!=NaN) { // 동작안한다 왜? NaN은 비교연산 할 수 없다.  => isNaN, Number.isNaN 사용
+      // if(!Number.isNaN(num)) { //! : (NOT)  // Number.isNaN(num)!=true // isNaN(num) num은 이미 parseFloat로 형변환 했기때문에 Number.isNaN으로 비교해도된다.
+      //   sum+=num;
+      // }
+      // ▣ 18.33em 포함안하는 경우 -> 18.33em을 문자로 -> 숫자형변환을 Number() 이용하기
+      // num = Number(li.innerText);
+      num = (li.innerText);
+      if(!isNaN(num)) { // isNaN(num)!=true
+        sum+=Number(num); // 문자열 num 을 숫자로 변환 해서 더하기 // 왜? 문자열 + 숫자 는 문자가 되므로.
+      }
+    }
+    console.log(`계산결과 ${sum}`);
+
+    for(let li of ex3Lis) {
+      let result = isNaN((li.innerText)); // NaN이면 true
+      if(result == true) {
+        sum+=(li.innerText); //018.33em18십오
+        sum+=parseInt(li.innerText); // NaNnullNaN
+      }
+      console.log(parseInt(li.innerText));
+    }
+    console.log('더하기');
+    console.log(sum);
+  </script>
+
+
+  <script> // ■ 배열 for 반복문
+    const arr = [10,-20,30,55,200,-250]; // 모든값을 더하세요~
+    /* 자바 for
+    for(int i=0; i<arr.length; i++) { // 선언문; 조건식; 증감식;}
+    for(int a : arr) { // iterator 반복문, 향상된 for 문
+      sum+=a;
+    }
+     */
+    /* 자바 while
+        int i=0; //선언식
+        while(i<arr.length){ //검사식
+            i++; //증감식
+        }
+        Iterator i=arr; //Iterable 객체
+        while(i.next()){ // i 배열 arr의 다음 요소가 있을때까지 반복
+            i.nextValue();
+        }
+        while(true){} //application 의 무한 반복문
+     */
+
+    // 방법 1
+    let sum=0
+    for(let i=0; i<arr.length; i++) {
+      sum+=arr[i];
+    }
+    console.log("for로 arr의 모든 자료를 더한값 : " + sum)
+
+    // 방법 2
+    sum=0;
+    for(let a of arr ) { // of (== :) // Array 일때 하는 방법
+      sum+=a;
+    }
+    console.log("for of 로 arr의 모든 자료를 더한값 : " + sum)
+
+    // 방법 3
+    // js에 밖에 없는 것 : for in // Object 일때 하는 방법
+    sum=0;
+    for (let i in arr) { // in 은 key를 반환하는데 Array 일때는 index를 반환
+      sum+=arr[i];
+    }
+    console.log("for in으로 arr의 모든 자료를 더한 값: " +sum)
+
+  </script>
+
+  <script> // 내가 이해하려고 추가로 적은 것들
+  // js가 어려운 이유 ~ 방법이 아주아주아주 많다~  다 알려준다~
+  // ■ id 선택자는 노드 개체를 바로 선택할 수 있다.
+  // console.log(ex1); // <ul id="ex1"></ul>
+  // == const ex1Node=document.getElementById("ex1");
+  // console.log(ex1Node);
+
+  // ■ li 노드(태그)를 리스트(배열)로 바꾸는 방법
+  // 1. childNodes
+  // console.log(ex1.childNodes);
+  // == NodeList(15)[text, li, text, li, text, li, text, li, text, li, text, li, text, li, text]
+  // 배열 중간중간 공백이 포함된다. text가 들어온다.
+
+
+  // for in 반복문: Array 필드가 추가로 나와서 index가 아닌 필드(길이, item(), namedItem())가 나온다. -> 결과 undefined가 된다.
+  /*
+  sum1 = 0;
+  for (let i in liArr) {
+    sum1+=parseInt(liArr[i].innerText);
+    console.log(liArr[i])
+  }
+  console.log("for of 로 arr의 모든 자료를 더한값 : " + sum1);
+  */
+
+  /*
+  멀티쓰레드 / 일꾼 2명 - 동시에 작업 - 순서가 상관이없다 // 일꾼들은 각자의 일을 한다. // 일꾼은 메모리이다. // 비동기 : 속도(일처리) 빠르다  하지만 메모리사용량 증가 -> 메모리가 부족
+  EventListener 멀티스레드의 일들을 무한반복문으로 이벤트를 듣고있다. // 일꾼들은 각자의 일을 한다.
+  EventListener 동작은 멀티쓰레드로 하지만. 원쓰레드로 멀티쓰레드 작업을 하는 것. == 경량쓰레드 -> 속도 빠르고
+  쓰레드 / 일꾼 1명 - 하나씩 작업 - 순서대로 실행 // 싱글스레드-하나의 callstack
+*/
+
+  /*
+  멸치가 10개 모여도 정어리를 못 이긴다. -> tag를 아무리 많이해도 class 우선순위를 못이긴다.
+  html>body>div>div>div>div>div>div>div>div>div>ul {color : purple;}
+  ul {color : red; } // 1점
+  colorUl {color : blue; !important} // 10점
+  ul.colorUl {color : green; } // 11점
+  <ul class="colorUl"></ul>
+  */
+
+  </script>
+</body>
+</html>
