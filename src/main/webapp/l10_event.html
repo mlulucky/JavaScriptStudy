@@ -186,9 +186,6 @@ https://www.w3schools.com/jsref/obj_mouseevent.asp
   elem2.onclick = () => alert("덮은 안녕하세요.");
   elem2.removeEventListener("click", handler2);
 
-
-
-
 </script>
 <input type="button" onclick="a()" value="클릭하세요">
 <script>
@@ -196,7 +193,7 @@ https://www.w3schools.com/jsref/obj_mouseevent.asp
     요소에 onclick을 정의하면z
     ="" 으로 이미 function 이벤트핸들러(콜백함수)가 정의되있음
     즉, 이벤트 콜백함수가 이미 정의되있기 때문에
-    a 함수를 바로 쓸수없고(재정의할수없고), => onclick=a;
+    a 함수를 바로 쓸수없고(재정의할수없고), => onclick=a; (X)
     콜백함수(function(event){ "" })의 내부{" "}를 정의하는것.
    */
 
@@ -403,7 +400,6 @@ https://www.w3schools.com/jsref/obj_mouseevent.asp
     position: relative;
   }
   #dropDownMenu .menu { /* li 태그가 플렉스가 되면서 .menu도 부모크기만큼 가지게됨 */
-    /*display: none;*/
     list-style: none;
     position: absolute; /* 메뉴가 대메뉴 li 에 포함되지 않고 독립적으로 포지션설정 가능 */
     /*border: 1px solid;*/ /* 애니메이션시 선 생긴다. -> 선쓰고 싶으면 li에 보더 주기?? */
@@ -478,8 +474,9 @@ https://www.w3schools.com/jsref/obj_mouseevent.asp
   // const dropDowndMenu = document.getElementById("dropDownMenu"); // <ul></>ul>
   // const dropDownMenuLis=dropDowndMenu.getElementsByTagName("li"); // ElementsByTagName 자손
   // const dropDownMenuLis = ddMenu.children;
-  const dropDownMenuLis = document.querySelectorAll("#dropDownMenu>li"); // nodeList
-  dropDownMenuLis.forEach((li)=>{
+  const dropDownMenuLis = document.querySelectorAll("#dropDownMenu>li"); // nodeList // li 대메뉴 여러개
+  dropDownMenuLis.forEach((li)=>{ // li 대메뉴
+    // console.log(li.lastElementChild); // ul.menu
     li.onmouseenter=function(e) {
       li.lastElementChild.style.height="auto"; // default값 : 컨텐츠의 높이만큼 부모의 높이가 따른다. // 이걸 써야 mxHeight이랑 같이 쓸때, 메뉴가 다음메뉴 나오는거 기다리지 않고 바로 나온다
       li.lastElementChild.style.maxHeight = "500px"; // 대충 엄청 크게 하기  - maxHeight보다 값이 낮은 경우 안에 내용은 컨텐츠의 높이만큼 나온다. // 부모(대메뉴)의 높이를 기준으로 자식이 100%로 따른다.
@@ -514,7 +511,7 @@ https://www.w3schools.com/jsref/obj_mouseevent.asp
 -->
 <script>
   // 기본형을 제외하고는 무엇이든 간에 다른것이 생성된다. 함수형, 문자열, 타입 /  자료형, 배열, 오브젝트함수, 일반함수, 화살표 함수 전부 다
-  // 똑같은 함수라는건 완전 똑같은 거. 똑같은 변수가 참조하고 있는 함수 등을 말한다.
+  // 똑같은 함수라는건 완전 똑같은 거. 변수가 똑같은 주소를 참조하고 있는 함수 등을 말한다.
   // 똑같이 써서 같은거는 기본형 밖에 없다. ex ) "안녕" == "안녕"
   const func=()=>{alert("안녕!"); return "^^"}
   const func2=()=>{alert("안녕!")}

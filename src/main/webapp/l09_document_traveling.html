@@ -117,12 +117,15 @@
       li.style.color = "rgb(80,80,200)";
     })
     const test2RedList = test2.getElementsByClassName('red'); // 클래스만 찾을때 // ElementsBy ~ HTMLCollection (forEach 없다)
-    console.log(test2RedList);
+    console.log("test2RedList", test2RedList);
+    console.log(Array.from(test2RedList));
     for (let li of test2RedList) { // HTMLCollection 은 forEach가 없으므로 무조건 for of(Iterator) 사용
       li.style.color = "rgb(200,80,80)";
     }
     // 배열에서 Array 필드를 사용하고 싶을때, 배열을 Array 로 파싱(형변환)하는 함수
+
     Array.from(test2RedList).forEach((li)=> {
+
       li.style.textDecoration="underline";
     })
 

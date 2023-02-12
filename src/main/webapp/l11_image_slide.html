@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>이미지 슬라이더 예제</title>
+</head>
+<style>
+    .wrap {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        /*border: 1px solid;*/
+    }
+    .container {
+        display: flex;
+        align-items: center;
+    }
+    #imgBox {
+        width: 350px;
+        height: 250px;
+        position: relative;
+    }
+    #imgBox > img {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        /*display: none;*/
+        /* 이미지 애니메이션 효과 => 포인트) 이미지 포지션을 relative absolute로 동일한 위치로 맞춰주기 */
+        opacity: 0;  /* opacity는 visibility와 같이 사용하기! 왜? 눈에 안보여도 실제로는 존재하기 때문에 마우스에 반응, 하지만 지금은 포지션 absolute로 동일한 위치로 했기때문에 visibility 안해도 됨 */
+        /*visibility: hidden;*/
+        transition: all linear 500ms;
+    }
+    #imgBox > img.active {
+        /*display: block;*/
+        /* 이미지 애니메이션 효과 */
+        opacity: 1;
+        /*visibility: visible;*/
+    }
+    #navigations {
+        list-style: none;
+        padding-left: 0;
+        /*border: 2px solid red;*/
+        display: flex;
+        justify-content: space-around;
+    }
+    #navigations > li {
+        border: 1px solid;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex; /* 버튼 숫자 중앙정렬 */
+        align-items: center;
+        justify-content: center;
+        margin: 0 5px;
+        cursor: pointer;
+    }
+    #navigations > li:hover {
+        color: dodgerblue;
+    }
+    .btn {
+        width: 30px;
+        height: 30px;
+        font-size: 40px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+    .btn:hover {
+        color: dodgerblue;
+    }
+
+</style>
+<body>
+    <h2>이미지 슬라이더 만들기 1번 문제</h2>
+    <p>navigations 의 수를 누르면 해당 수와 동일한 위치의 이미지만 화면에 보이게 하세요!</p>
+    <p>next 와 prev 버튼을 누르면 해당 이미지의 다음과 이전 이미지만 보이게 하세요!</p>
+    <div class="wrap">
+        <div class="container">
+            <div id="prevBtn" class="btn"> < </div>
+            <div id="imgBox">
+                <img src="img/물총새.jpeg" alt="">
+                <img src="img/백조.jpeg" alt="">
+                <img class="active" src="img/벌새.jpeg" alt="">
+                <img src="img/부엉이.jpeg" alt="">
+                <img src="img/올빼미.jpeg" alt="">
+                <img src="img/참새.jpeg" alt="">
+            </div>
+            <div id="nextBtn" class="btn"> > </div>
+        </div>
+        <ul id="navigations">
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+            <li>6</li>
+        </ul>
+    </div>
+    <script>
+        // ■ 2/13 월요일 질문 !! -> 코드 이렇게 해도 되는지? 그리고 여러번 작동시 오류 여쭤보기!!!
+
+        const btnLis = document.querySelectorAll("#navigations > li");  // nodeList [li,li,li...]
+        const imgLis = document.querySelectorAll("#imgBox > img"); // nodeList
+
+        // next, prev
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+        console.log(prevBtn);
+        console.log(nextBtn);
+        btnLis.forEach((btn,i,array)=>{
+            // navigations 클릭했을때
+            array[i].onclick=function(e) { // btn 클릭했을때
+                imgLis.forEach((img,j,array2)=>{ // img 반복문
+                    if(i==j) { // btn 인데스 == img 인덱스 // 버튼 번호와 img 번호가 일치하면
+                        img.classList.add("active"); // 현재 화면에 보여지는 이미지
+                        console.log("일치",j);
+                    /*    prevBtn.onclick=function(e) {
+                            if(j>0) {
+                                array2[j].classList.remove("active");
+                                array2[j].previousElementSibling.classList.add("active");
+                                j--; // 클릭할때마다 인덱스 1씩감소
+                            }
+                        }
+                        nextBtn.onclick=function(e) {
+                            if(j<array2.length-1) {
+                                array2[j].classList.remove("active");
+                                array2[j].nextElementSibling.classList.add("active");
+                                j++;
+                            }
+                        }*/
+
+                    }   else {
+                            img.classList.remove("active"); // 버튼 번호와 img 번호가 불일치
+                            console.log("불일치",j);
+                    }
+                })
+            }
+            // 해당이미지라는것은 active가 추가된 이미지
+            // active 이미지의 이전을 보여주기. => 먼저 해당이미지의 index 구하기 => indexOf
+            let aIndex = Array.from(imgLis).indexOf(document.querySelector(".active"));
+            if(i<=aIndex) {
+                prevBtn.onclick=function(e) {
+                   if(i>0) {
+                       console.log(i);
+                       imgLis[i].classList.remove("active");
+                       imgLis[i].previousElementSibling.classList.add("active")
+                       i--;
+                   }
+                }
+                nextBtn.onclick=function(e) {
+                    if(i<imgLis.length-1) {
+                        console.log(i);
+                        imgLis[i].classList.remove("active");
+                        imgLis[i].nextElementSibling.classList.add("active")
+                        i++;
+
+                    }
+                }
+            }
+        })
+    </script>
+
+
+    <style>
+        .wrap2 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            /*border: 1px solid;*/
+        }
+        .container2 {
+            display: flex;
+            align-items: center;
+            /*border: 2px solid blue;*/
+        }
+        #imgBox2 {
+            width: 350px;
+            height: 250px;
+            display: flex;
+            align-items: center;
+            padding-left: 60px;
+            /*position: relative;*/
+            border: 1px solid;
+            overflow: hidden;
+        }
+        #imgBox2 > img {
+            /*position: absolute;*/
+            display: inline-block;
+            width: 250px;
+            height: 200px;
+            margin: 10px;
+            /*width: 100%;*/
+            /*height: 100%;*/
+            /*display: none;*/
+            /* 이미지 애니메이션 효과 => 포인트) 이미지 포지션을 relative absolute로 동일한 위치로 맞춰주기 */
+            // opacity: 0;  /* opacity는 visibility와 같이 사용하기! 왜? 눈에 안보여도 실제로는 존재하기 때문에 마우스에 반응, 하지만 지금은 포지션 absolute로 동일한 위치로 했기때문에 visibility 안해도 됨 */
+            /*visibility: hidden;*/
+            // transition: all linear 500ms;
+        }
+        #imgBox2 > img.active {
+            /*display: block;*/
+            /* 이미지 애니메이션 효과 */
+            /*opacity: 1;*/
+            /*visibility: visible;*/
+        }
+        #navigations2 {
+            list-style: none;
+            padding-left: 0;
+            /*border: 2px solid red;*/
+            display: flex;
+            justify-content: space-around;
+        }
+        #navigations2 > li {
+            border: 1px solid;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex; /* 버튼 숫자 중앙정렬 */
+            align-items: center;
+            justify-content: center;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+        #navigations2 > li:hover {
+            color: dodgerblue;
+        }
+        .btn {
+            width: 30px;
+            height: 30px;
+            font-size: 40px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .btn:hover {
+            color: dodgerblue;
+        }
+        #imgWrap {
+            display: flex;
+            border: 4px solid red;
+        }
+
+    </style>
+
+    <h2>이미지 슬라이더 만들기 2번 문제</h2>
+    <p>navigations 의 수를 누르면 이미지 번호의 이미지가 중앙에 오도록 하세요!</p>
+    <p>next 와 prev 버튼을 누르면 이전과 다음 이미지가 중앙에 오도록 하세요!</p>
+
+    <div class="wrap2">
+        <div class="container2">
+            <div id="prevBtn2" class="btn"> < </div>
+            <div id="imgBox2">
+                <img class="active" src="img/물총새.jpeg" alt="">
+                <img src="img/백조.jpeg" alt="">
+                <img src="img/벌새.jpeg" alt="">
+                <img src="img/부엉이.jpeg" alt="">
+                <img src="img/올빼미.jpeg" alt="">
+                <img src="img/참새.jpeg" alt="">
+            </div>
+            <div id="nextBtn2" class="btn"> > </div>
+        </div>
+        <ul id="navigations2">
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+            <li>6</li>
+        </ul>
+    </div>
+    <script>
+        const btnLis2 = document.querySelectorAll("#navigations2 > li");  // nodeList [li,li,li...]
+        const imgLis2 = document.querySelectorAll("#imgBox2 > img"); // nodeList
+        const imgBox2 = document.getElementById("imgBox2");
+        // next, prev
+        const prevBtn2 = document.getElementById("prevBtn2");
+        const nextBtn2 = document.getElementById("nextBtn2");
+
+        // imgBox2의 가로, 세로 너비
+        let imgBox2Width = imgBox2.clientWidth; // node에 적용된 실제 넓이와 높이(px)
+        let imgBox2Height = imgBox2.clientHeight;
+
+        const imgWidth = imgLis2[0].clientWidth;
+        const imgWrap= document.getElementById("imgWrap");
+
+        let currentIdx = 0;
+        let translate = 0;
+
+        prevBtn2.addEventListener("click", function(){
+            if(currentIdx !== imgLis2.length -1) {
+                translate = translate - imgWidth;
+                imgWrap.style.transform = `translateX(${-200}px)`;
+                currentIdx += 1;
+            }
+        })
+
+
+
+        /*console.log(prevBtn2);
+        console.log(nextBtn2);
+        btnLis2.forEach((btn,i,array)=>{ // btn 은 버튼 1개
+            // navigations 클릭했을때
+            array[i].onclick=function(e) { // btn 클릭했을때
+                imgLis2.forEach((img,j,array2)=>{ // img 반복문
+                    if(i==j) { // btn 인데스 == img 인덱스 // 버튼 번호와 img 번호가 일치하면
+                        img.classList.add("active"); // 현재 화면에 보여지는 이미지
+                        console.log("일치",j);
+                        /!*    prevBtn.onclick=function(e) {
+                                if(j>0) {
+                                    array2[j].classList.remove("active");
+                                    array2[j].previousElementSibling.classList.add("active");
+                                    j--; // 클릭할때마다 인덱스 1씩감소
+                                }
+                            }
+                            nextBtn.onclick=function(e) {
+                                if(j<array2.length-1) {
+                                    array2[j].classList.remove("active");
+                                    array2[j].nextElementSibling.classList.add("active");
+                                    j++;
+                                }
+                            }*!/
+
+                    }   else {
+                        img.classList.remove("active"); // 버튼 번호와 img 번호가 불일치
+                        console.log("불일치",j);
+                    }
+                })
+            }
+            // 해당이미지라는것은 active가 추가된 이미지
+            // active 이미지의 이전을 보여주기. => 먼저 해당이미지의 index 구하기 => indexOf
+            let aIndex = Array.from(imgLis2).indexOf(document.querySelector(".active"));
+            if(i<=aIndex) {
+                prevBtn2.onclick=function(e) {
+                    if(i>0) {
+                        console.log(i);
+                        imgLis[i].classList.remove("active");
+                        imgLis[i].previousElementSibling.classList.add("active")
+                        i--;
+                    }
+                }
+                nextBtn2.onclick=function(e) {
+                    if(i<imgLis.length-1) {
+                        console.log(i);
+                        imgLis[i].classList.remove("active");
+                        imgLis[i].nextElementSibling.classList.add("active")
+                        i++;
+
+                    }
+                }
+            }
+        })*/
+    </script>
+
+
+
+</body>
+</html>
