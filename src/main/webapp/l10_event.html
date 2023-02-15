@@ -291,6 +291,10 @@ https://www.w3schools.com/jsref/obj_mouseevent.asp
     screenInfo.innerText=`x: ${e.screenX}, y: ${e.screenY} (모니터)`;  // 모니터위치를 기준으로
 
     // style 에서 크기는 단위가 무조건 존재해야한다. 0을 제외하고 => px, %, em ...
+    /* ball.style.left=e.offsetX+"px"; // html, xml의 모든 값은 문자열. => 연산해야하는 경우 문자 -> 숫자형으로 형변환 해야 한다.
+
+    */
+
     // px 는 모니터 단위(1980*10180) 기준으로 위치. 픽셀px
     // 컨테이너 너비 값을 구하기! => node.clientHeight 로 구할수 있다. // 자신 node 가 브라우저에서 나타나는 너비 // clientX와 관계 없다.
     console.log('ex3Container.clientWidth',ex3Container.clientWidth, 'ex3Container.clientHeight',ex3Container.clientHeight);
@@ -409,11 +413,11 @@ https://www.w3schools.com/jsref/obj_mouseevent.asp
     top: 40px;
     width: 200px;
     max-height: 0;
-    opacity: 0;
     /* contents 높이와 상관없이 해당노드의 높이의 최댓값
        max-height : 10000px; 내용(컨텐츠) : 20px;    => 노드 = 20px
        max-height : 10000px; 내용(컨텐츠) : 12000px; => 노드 = 10000px // 내용은 max-height를 못넘어 간다.
      */
+    opacity: 0;
     overflow: hidden;
     background-color: lightblue;
     transition: all linear 1s;
@@ -479,7 +483,7 @@ https://www.w3schools.com/jsref/obj_mouseevent.asp
     // console.log(li.lastElementChild); // ul.menu
     li.onmouseenter=function(e) {
       li.lastElementChild.style.height="auto"; // default값 : 컨텐츠의 높이만큼 부모의 높이가 따른다. // 이걸 써야 mxHeight이랑 같이 쓸때, 메뉴가 다음메뉴 나오는거 기다리지 않고 바로 나온다
-      li.lastElementChild.style.maxHeight = "500px"; // 대충 엄청 크게 하기  - maxHeight보다 값이 낮은 경우 안에 내용은 컨텐츠의 높이만큼 나온다. // 부모(대메뉴)의 높이를 기준으로 자식이 100%로 따른다.
+      li.lastElementChild.style.maxHeight = "500px"; // maxHeight보다 값이 낮은 경우 안에 내용은 컨텐츠의 높이만큼 나온다. // 부모(대메뉴)의 높이를 기준으로 자식이 100%로 따른다.
       li.lastElementChild.style.opacity="100%";
     }
     li.addEventListener("mouseleave", (e) => {

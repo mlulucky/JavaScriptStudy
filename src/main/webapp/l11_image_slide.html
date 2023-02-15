@@ -98,67 +98,52 @@
         </ul>
     </div>
     <script>
-        // ■ 2/13 월요일 질문 !! -> 코드 이렇게 해도 되는지? 그리고 여러번 작동시 오류 여쭤보기!!!
-
         const btnLis = document.querySelectorAll("#navigations > li");  // nodeList [li,li,li...]
         const imgLis = document.querySelectorAll("#imgBox > img"); // nodeList
-
-        // next, prev
+        const imgBox = document.querySelector("#imgBox"); // 하나만 있어도 queryselectorAll로 찾으면 무조건 배열이다. // querySelector 로 찾기!!!
         const prevBtn = document.getElementById("prevBtn");
         const nextBtn = document.getElementById("nextBtn");
-        console.log(prevBtn);
-        console.log(nextBtn);
-        btnLis.forEach((btn,i,array)=>{
-            // navigations 클릭했을때
-            array[i].onclick=function(e) { // btn 클릭했을때
-                imgLis.forEach((img,j,array2)=>{ // img 반복문
+
+        // navigations 버튼 클릭했을 때
+        btnLis.forEach((btn,i)=>{
+            btn.onclick=function(e) { // btn 클릭했을때
+                imgLis.forEach((img,j)=>{ // img 반복문
                     if(i==j) { // btn 인데스 == img 인덱스 // 버튼 번호와 img 번호가 일치하면
                         img.classList.add("active"); // 현재 화면에 보여지는 이미지
                         console.log("일치",j);
-                    /*    prevBtn.onclick=function(e) {
-                            if(j>0) {
-                                array2[j].classList.remove("active");
-                                array2[j].previousElementSibling.classList.add("active");
-                                j--; // 클릭할때마다 인덱스 1씩감소
-                            }
-                        }
-                        nextBtn.onclick=function(e) {
-                            if(j<array2.length-1) {
-                                array2[j].classList.remove("active");
-                                array2[j].nextElementSibling.classList.add("active");
-                                j++;
-                            }
-                        }*/
-
-                    }   else {
-                            img.classList.remove("active"); // 버튼 번호와 img 번호가 불일치
-                            console.log("불일치",j);
+                    } else {
+                        img.classList.remove("active"); // 버튼 번호와 img 번호가 불일치
+                        console.log("불일치",j);
                     }
                 })
             }
-            // 해당이미지라는것은 active가 추가된 이미지
-            // active 이미지의 이전을 보여주기. => 먼저 해당이미지의 index 구하기 => indexOf
-            let aIndex = Array.from(imgLis).indexOf(document.querySelector(".active"));
-            if(i<=aIndex) {
-                prevBtn.onclick=function(e) {
-                   if(i>0) {
-                       console.log(i);
-                       imgLis[i].classList.remove("active");
-                       imgLis[i].previousElementSibling.classList.add("active")
-                       i--;
-                   }
-                }
-                nextBtn.onclick=function(e) {
-                    if(i<imgLis.length-1) {
-                        console.log(i);
-                        imgLis[i].classList.remove("active");
-                        imgLis[i].nextElementSibling.classList.add("active")
-                        i++;
-
-                    }
-                }
-            }
         })
+
+        // 해당이미지라는것은 active가 추가된 이미지
+        // active 이미지의 이전을 보여주기. => 먼저 해당이미지의 index 구하기 => indexOf
+        // active 이미지의 index 위치가 버튼 클릭 함수 바깥에 있으면
+        // 함수가 위에서 아래로 실행 시 최초에 한번만 실행되므로 버튼을 클릭했을때의 함수안에 넣어서 찾아야 한다.
+        // 그리고 document 에서 querySelector 하면 active가 여러개 있을 수 있어서 정확하게 파일명을 해주는게 좋다 document -> imgBox 사용
+        // let aIndex = Array.from(imgLis).indexOf(document.querySelector(".active"));
+
+        // prev 버튼 클릭했을 때
+        prevBtn.onclick=function(e) {
+            let aIndex = Array.from(imgLis).indexOf(imgBox.querySelector(".active"));
+            if(aIndex>0) {
+                imgLis[aIndex].classList.remove("active");
+                imgLis[aIndex-1].classList.add("active");
+                aIndex--;
+            }
+        }
+        // next 버튼 클릭했을 때
+        nextBtn.onclick=function(e) {
+            let aIndex = Array.from(imgLis).indexOf(imgBox.querySelector(".active"));
+            if(aIndex<imgLis.length-1) {
+                imgLis[aIndex].classList.remove("active");
+                imgLis[aIndex+1].classList.add("active");
+                aIndex++;
+            }
+        }
     </script>
 
 

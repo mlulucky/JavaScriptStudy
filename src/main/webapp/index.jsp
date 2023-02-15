@@ -27,9 +27,19 @@
             <li><a href="l08_array_iteration.html">8.배열의 내부 반복문(Iterator)과 정렬 (const)</a></li>
             <li><a href="l09_document_traveling.html">9.document DOMTree 와 node 객체</a></li>
             <li><a href="l10_event.html">10.event.html</a></li>
-            <li><a href="l11_image_slide.html">11.JSON 과 Object</a></li>
-            <li><a href="">12.브라우저 객체 window 와 document</a></li>
-            <li><a href="">13.js를 참조하는 방법들(태그,파일 (defer async))</a></li>
+            <li><a href="l11_image_slide.html">11.이미지 슬라이드 만들기</a></li>
+            <li><a href="l12_class.html">12.자바스크립트의 클래스 문법(static sugar)</a></li>
+            <li><a href="l13_getter_setter.html">13.class 의 getter setter 와 캡슐화</a></li>
+            <li><a href="l14_emp_list.do">14.자바에서 DTO 사용해 보기(Emp.List)</a></li>
+            <li><a href="l15_timing_function.html">15.타이밍 함수 setTimeout 과 setInterval(== 멀티스레드 new Thread)</a></li>
+            <li><a href="l16_this_bind.html">16.함수의 binding 과 this 와 화살표 함수</a></li>
+            <li><a href="l17_promise.html">17.Promise 로 멀티스레드 동기화</a></li>
+            <li><a href="l18_promise_chainning.html">18.Promise 채이닝과 프라미스화로 비동기 코드(멀티스레드)를 계속 동기화하기</a></li>
+            <li><a href="l19_ajax_xmlhttprequest.html">19.Ajax 와 XMLHttpRequest 객체(프론트+백엔드)</a></li>
+            <li><a href="">20.Ajax 와 fetch api 와 Promise</a></li>
+            <li><a href="">21.Ajax 와 async 함수(js 수업 끝~)</a></li>
+            <li><a href="">22.prototype 의 상속</a></li>
+            <%--            (li>a{$.})*4--%>
         </ul>
     </nav>
 
@@ -44,6 +54,33 @@
 <script>
     // 자바는 array와 arraylist가 2개 있는데, 자바스크립트는 arraylist 하나로 통일
     // html의 파일이름은 _ 를 이용해서 소문자로 쓰는게 좋다 -> 왜? 대소문자를 구분못하는 서버가 있다. > l00_variable_const.html
+/*
+
+    js 배우는 이유
+    1개의 언어라도 제대로 알아야 한다. -> 5년차 쯤 되야 언어를 왜 쓰는지 객체지향, 인터페이스 등 언어 특징을 알게됨
+        -> 한개만 하다보면 다른 언어로 못 넘어간다. (유연성 x)
+    웹 이슈 - js 이슈가 많다. js 가 대세
+    js 를 잘하면 좋다.
+
+        자바를 잘하려면
+    다른 언어를 배우는 것도 좋다.(자바에 대해 더 배울수있다)
+    (자바의 특징과 다른 언어들의 특징을 비교하며 배운다. => 이때 장단점이 보여야 비로소 내 언어가 된다)
+
+    프로그래밍 갈림길
+    자바만 배워서는 안된다
+
+    언어를 배우는 것에 두려움이 없어야 한다.
+
+        js 배우면 배울 수 있다 (특히 L12 js 클래스 ~ 22 Ajax, async)
+        -> node js -> express js
+        -> react js
+        -> next js
+        -> view js
+        -> angular js
+
+    회사에서 찾는다
+*/
+
 </script>
 
 </body>

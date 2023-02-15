@@ -86,7 +86,8 @@
     // Inline Style : 요소에 직접 쓰거나 자바스크립트로 요소를 찾아서 스타일을 주면 인라인에 적용된다. (js로 요소를 동적으로 만들기 위해 존재)
     // 브라우저가 HTML을 노드 객체로 만들기 전에 꼭 Dom Tree 를 생성해서 CSS 명세서(css 선택자의 dom trveling)를 이용해 그래픽(화면)을 그린다. -> 돔이 어떻게 생긴지, 노드 구성이 알아야 그림을 그릴 수 있다
     // 선택자를 통해 돔트래블링을 할 수 있다.
-    // ★스타일은 노드 개체의 속성이다! => 그래야지 노드를 그릴수있는것. 스타일 줄수있는 것.
+
+    // 스타일은 노드 개체의 속성이다!! => 그래야지 노드를 그릴수있는것. 스타일 줄수있는 것.
     ex2H3.style.color="purple";
 
     // 노드 개체의 이벤트 속성(이벤트속성 : GUI가 동작하기 위한 최소의 장치 MouseEvent) // 이벤트 속성이 없으면 GUI가 동작하지 않는다 // 이벤트 종류 https://www.w3schools.com/jsref/dom_obj_event.asp , https://www.w3schools.com/jsref/obj_events.asp
@@ -128,25 +129,6 @@
 
       // css : hover (mouseleave, mouseenter 둘다포함)
     }
-
-
-    // ex2.children; // [li,li,li,...,li]
-    // for(let l of ex2.children) { // l=li
-    //   l.onmouseenter=function(e) {
-    //     e.target.style.color=l.innerText;
-    //   }
-    //   l.addEventListener("mouseleave", function(){
-    //     l.style.color='#000';
-    //   })
-    // }
-    //
-    //   ex2H3.onmouseenter=function (e){
-    //   this.style.color='blue'; //==ex2H3
-    // }
-    //   ex2H3.onmouseleave=function(e){
-    //   this.style.color='#000';
-    // }
-
   </script>
 
   <h3>문제3 다음 리스트에서 수가 아닌 것을 제외한 모든 값을 더하세요~(힌트 NaN)</h3>

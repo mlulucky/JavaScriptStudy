@@ -6,19 +6,6 @@
 </head>
 <body>
   <h1>if 문과 switch와 삼항 연산자</h1>
-  <div>
-    성적 입력:
-    <input id="ex1Score" type="text">
-    <b id="ex1Grade"></b>
-    <br>(1. oninput 으로 문자열이 입력되면 입력한 문자열만 삭제하고 입력받은 값(값의길이)이 100보다 작아야 한다.)
-    <br>(2. onchange 로 입력받은 문자열이 정수가 아니거나 0~100 사이가 아니면 Alert 으로 경고(수를입력하시오)를 띄우고 다시 입력받도록 한다.)
-
-    (0~100만 입력가능 하게 만들기)
-    <!-- type number는 잘 쓰지 않는다. type=number 는 신용이 없다 -->
-<!--    input type=number 실무에서 사용하지 않는 이유 -->
-<!--    1. 디자인 제한 2. 믿을 수 없다(진짜 number인지 믿을 수 없다.) 3. 관습적.. -->
-
-  </div>
   <h2>입력요소에서 발생하는 이벤트(암기!)</h2>
   <ul>
     <li>onchange : 입력요소에 값을 변경하고 focus 가 벗어나는 것</li>
@@ -39,7 +26,7 @@
     <li>가독성이 좋다 (유지보수) (if문은 조건을 파악하기 어렵다.)</li>
     <li>if문 보다 훨~씬 빠른다</li>
     <li>switch 는 기본형만 비교연산 가능 (단점)</li>
-     <li>switch 는 복잡한 조건을 사용할 수 없다.</li>
+    <li>switch 는 복잡한 조건을 사용할 수 없다.</li>
   </ul>
   <h2>js Boolean()이 true false 를 반환하는 것들(암기!)</h2>
   <ul> <!-- if((Boolean)null) -->
@@ -60,6 +47,19 @@
   </ul>
 
 
+  <div>
+    성적 입력:
+    <input id="ex1Score" type="text">
+    <b id="ex1Grade"></b>
+    <br>(1. oninput 으로 문자열이 입력되면 입력한 문자열만 삭제하고 입력받은 값(값의길이)이 100보다 작아야 한다.)
+    <br>(2. onchange 로 입력받은 문자열이 정수가 아니거나 0~100 사이가 아니면 Alert 으로 경고(수를입력하시오)를 띄우고 다시 입력받도록 한다.)
+
+    (0~100만 입력가능 하게 만들기)
+    <!-- type number는 잘 쓰지 않는다. type=number 는 신용이 없다 -->
+    <!-- input type=number 실무에서 사용하지 않는 이유 -->
+    <!-- 1. 디자인 제한 2. 믿을 수 없다(진짜 number인지 믿을 수 없다.) 3. 관습적.. -->
+
+  </div>
   <script>
     const ex1Score = document.getElementById("ex1Score"); // 자동완성이 잘 된다.
     console.log(ex1Score);

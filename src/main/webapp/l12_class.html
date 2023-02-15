@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>js 의 class</title>
+</head>
+<body>
+  <h1>js의 static sugar class 문법!</h1>
+
+  <h2>프로토타입 기반 언어</h2>
+  <ul>
+      <li>타입을 명시하면 프로토타입 객체를 생성하는 언어</li>
+      <li>객체 생성시 프로토타입 객체를 기반으로 생성한다.</li>
+      <li>타입간의 상속은 프로토타입간의 체인으로 구현한다.(__proto__)</li> <!-- 상속을 구현, 부모의 prototype을 검색 -->
+      <li>자바스크립트에서는 function 을 선언하면 프로토타입 객체가 만들어져서 함수형 언어라고도 부른다.</li> <!-- 자바스크립트에서 함수는 타입으로 취급한다. 함수는 Object를 갖는다. -->
+      <li>이름이 있는 함수(기명함수) : js 엔진(V8) 이 코드를 실행하기 전(최초)에 해당 함수를 프로토타입객체로 생성 => 함수의 호이스팅 발생</li>
+      <li>이름이 없는 함수(익명함수) : 코드를 실행하면서 익명함수를 프로토타입 객체로 생성 (함수의 호이스팅을 막고 최초실행 속도를 빠르게 하기 위해)</li>
+      <li>이름이 있는 함수를 변수에 대입(기명함수표현식) : 익명함수와 동작이 같은데 재귀호출이 가능하다.</li> <!-- 재귀호출 : 함수가 자기자신을 다시 호출 , 무한반복문만들때, 똑같은 코드 또 실행할 때, 멈추기위해 조건문 필요 -->
+  </ul>
+  <h2>자바에서 타입(클래스)을 정의하는 방법</h2>
+  <pre>
+      class Type {
+        String name;
+        int age;
+        Type(String name, int age) { // 생성자
+            this.name=name;
+            this.age=age;
+        }
+        Type(String name) { // 생성자 _ 오버로드 // 오버로드는 자바에서 밖에 안된다. js는 오버로드 대신 기본값주기 // 모든 객체지향언어의 롤모델은 자바!. 자바와 비교..
+            this.name=name;
+            this.age=25;
+        }
+      }
+  </pre>
+  <h2>자바스크립트에서 타입(기명함수)을 정의하는 방법1</h2>
+  <pre>
+    function Type(name,age) {
+        this.name=name;
+        this.age=age;
+      }
+  </pre>
+  <h2>자바스크립트에서 타입(익명함수)을 정의하는 방법2</h2>
+  <p>호이스팅현상이 없고 js 최초실행이 빠르다.</p>
+  <pre>
+      const Type = function(name,age) {
+        this.name=name;
+        this.age=age;
+        this.hello=function() {
+            new Type(); (X) 불가능 // 왜? 함수안에서는 new Type() 생성할 수 없다. function(name,age)을 Type 에 대입했을때 이름이 생성되서. 가능해서.
+        }
+      }
+  </pre>
+  <h2>자바스크립트에서 타입(기명함수 표현식)을 정의하는 방법3</h2>
+  <p>호이스팅현상이 없고 js 최초실행이 빠르고 재귀호출이 가능</p>
+  <pre>
+      const Type=function name(name,age) { // 함수이름 있는 함수를 변수에 참조 // 함수이름 name
+        this.name=name;
+        this.age=age;
+        this.hello=function() {
+            new name(); (O) 가능 // 함수에 이름을 붙여주면 함수내에서 함수호출 할 수 있다.
+        }
+      }
+  </pre>
+  <h2>자바스크립트에서 타입(class)를 정의하는 방법4</h2>
+  <p>호이스팅 현상이 없고, 객체지향 문법을 사용해서 상속할 수 있다.</p>
+  <p>타입(클래스)의 멤버(프로퍼티,속성,필드)를 정의할때 *전역변수에서 this 를 사용할 수 없다.(함수나 생성자에서 사용가능 / this가 생략되있다고 생각..)</p>
+  <pre>
+      class Type{ <!-- 클래스는 js 에는 없는 문법적 설탕. 함수와 동일 한 기능. 모양만 다르다. -->
+        job="학생";  <!-- // 이건 전역변수 // this.job this 생략된거 // 자바 흉내낸거 // 여기서는 this 사용 못함 => 함수안에서만 this 호출, 정의용으로 쓴다. -->
+        interest=["독서", "농구"];
+        constructor(name, age){ // 생성자로 정의됨
+            this.name=name; // this 는 생성자나 함수 안에서만 사용가능
+            this.age=age;
+         }
+
+        // 함수 표현방법 : 3가지 다 똑같은 함수. 호출하는 표현방법이 다른것.
+        func(){}; // js 표본
+        func=function(){};
+        func=()=>{};
+      }
+
+      const t=new Type();
+      t.name;
+      t.job;
+      t.func(); // 함수호출
+
+  </pre>
+  <p>인터넷에서 함수를 정의하는 방법이 엄청엄청 많은데 어려워 보일까봐 다~~ 설명했다~</p>
+
+  <script>
+    // 타입 Person 함수
+    function Person(name, age, job, gender="남자"){ // 생성자 초기화
+      // gender="남자" : js 에서 가능한 문법 (js 는 오버로드를 할 수 없다.) // 오버로드 : 객체의 다형성의 일부로 메서드(생성자도 해당) 이름이 같은데 매개변수가 다른
+      this.name=name;
+      this.age=age;
+      this.job=job;
+      this.gender=gender;
+    } // Person 타입
+
+    // 1. Person 타입으로 만든 객체
+    const p0 = new Person("석정",25,"dba","여자");  // Person 으로 생성한 객체
+    const p1 = new Person("경민",38,"강사");  // Person 으로 생성한 객체
+    console.log(p0);
+    console.log(p1);
+    // 2. Object에 필드를 정의해서 만드는 객체
+    const p2 = {name: "은정", age: 20, job: "프로그래머", gender: "여자"}; // 타입없이 리터럴 한 값으로 만든 객체
+    const p3 = {name: "동홍", age: 26, job: "백엔드개발자", gender: "남자"};
+    console.log(p2);
+    console.log(p3);
+    // ** Type을 정의하는 이유 : 재사용 (객체를 쉽게 생성하기 위해서)
+
+    // 타입 Person2 클래스
+    class Person2 { // function 과 같은데 문법(class)만 존재 // 생성자를 갖는다.
+      // js : this. 을 하면 자동으로 필드를 생성
+      // java : 필드를 전역에 명시해야 한다.
+      // name;age;job;gender; // 생략가능 // js에서 필드는 this, let, var, const 를 사용하지 않는다. // 명시 안해도 된다. 생성자에서 넣으면 됨.
+
+      constructor(name,age,job,gender="여자") {
+        // this 는 해당 타입이 객체가 되었을 때 필드 접근자. // this 는 생성자 안에서 사용. 메서드 오버로딩이 안되서 매개변수 기본값(gender="")을 준다 // 기본값 매개변수는 뒤에서부터 주기. 앞쪽에서 주면 생략할 수 없다.
+        this.name=name; // new Person2() 객체가 되면 name 이라는 필드를 만들어
+        this.age=age;   // new Person2() 객체가 되면 age 이라는 필드를 만들어
+        this.job=job;   // new Person2() 객체가 되면 job 이라는 필드를 만들어
+        this.gender=gender;
+      }
+
+      // **클래스안에서 함수는 필드로 사용 // 함수이름=function()
+      hello0=function(){};
+      hello1=()=>{};
+      hello2(){}; // 필드로 하는 함수 - 권장하는 모습 // 앞에 function 생략 가능 // == hello2=function(){}
+    } // GC(가비지컬렉터)가 존재하는 프로그래밍 언어는 객체를 따로 삭제하면 안된다! (java, js)
+
+
+    const p4=new Person2("재연",25,"풀스택");
+    console.log(p4);
+
+    /* 화살표함수는 프로토타입이 생성되지 않기 때문에 생성자를 호출할 수 없다(객체를 만들 수 없다), this도 존재하지 않는다.
+    프로토타입에 생성자가 존재한다. - 타입이 없기 때문에 타입을 명시할 수 없다.
+    const sum=(a,b)=>{this.a=a; this.b=a};
+    console.log(sum.prototype);  // 에러
+    console.log(new sum(10,20)); // 에러
+    */
+
+    // Prototype : function 과 class 를 명시(작성)하면 생성되는 타입 (화살표 함수는 생성되지 않는다) // 조금 다른데 똑같은 거라고 보면 됨
+    // ** 생성자는 프로토타입에 존재
+    console.log("Person.prototype", Person.prototype);  // Person 함수
+    console.log("Person2.prototype", Person2.prototype); // Person2 클래스
+    // 프로토타입안에 length : 생성자에 들어가있는 매개변수의 숫자
+
+
+    // __proto__ : 객체간의 chainning. 링크 프로토타입의 부모 프로토타입을 참조하는 링크(채인) or 객체의 프로토타입을 참조
+    //.prototype : 함수에서 프로토타입을 볼때 사용. 함수는 객체가 아니라 문자열로 구성된 함수의 모습. //  프로토타입 == 타입을 미리 시제품으로 만든 객체
+    console.log(p0.prototype); // 에러 // 객체에는 프로토타입이 없다 // 객체는 자신을 생성한 프로토타입을 __proto__로 참조 가능
+    console.log(p0.__proto__); // 객체간의 링크. 기반으로 하는 프로토타입을 찾는다
+    console.log(p0.__proto__ === Person.prototype); // true // 자료형의 동등비교는 완전히 같은지(주소가 같은지. 똑같은 것을 참조하는 지) 묻는 것
+    console.log(p0.__proto__ === Object.prototype); // false // Person 프로토타입과 Object 프로토타입은 주소가 다르다.
+    console.log(p0 instanceof Person) // instanceof 객체의 타입을 검사 (부모도 검사 가능)
+    console.log(p0 instanceof Object);
+    console.log(p0.valueOf());  // Object.valueOf() 로 객체 명세서를 출력
+    console.log(p0.toString()); // Object.toString() // Object 프로토타입의 필드 toString()
+    // => toString : 객체에 대한 설명을 출력(js는 valueOf가 자동으로 필드를 모두 출력해서 재정의 하지 않는 편)(to String 잘 쓰지 않는다)
+
+    // **js 클래스를 이용한 상속 : 콘솔에서 상속 필드가 한눈에 보인다, 상속이 쉽다.
+    // 자바처럼 상속이 된다!
+    class A{
+        a="a.안녕"; // 클래스 A의 필드
+    }
+    class B extends A {  // 클래스 A를 상속
+        b="b.안녕";
+    }
+    class C extends B { // C는 B도 있고 A도 있다.
+        c="c.안녕";
+        b="C.b잘가!"; // *부모의 필드를 재정의 : B의 b
+    }
+    const c = new C(); // java의 상속을 흉내
+    console.log(c); // Object.valueOf() 명세서가 재정의되서 모든 필드가 하나에 있는 것처럼 출력됨
+    // java의 상속 : C가 부모의 필드 모두를 갖고 C를 기반으로 객체를 생성
+    // js의 상속 : A,B,C 프로토타입은 별개고 C 객체를 만들때 모든 프로토타입(A,B,C)을 기반으로 생성
+
+
+    // js 함수의 상속 : extends 가 없다.
+    function E(){
+        this.a="E.a";
+    }
+    function F(){
+        this.b="F.b";
+        this.__proto__=new E(); // 프로토 타입의 상속
+        // this.__proto__=E.prototype; // 안됨.. 프로토타입으로 상속받는 방법이 있을까 ?
+
+    }
+    const f=new F();
+    console.log("상속예시")
+    console.log(f); // 콘솔에서 봤을땐 a가 없는 것처럼 보이지만 a를 호출할 수 있다. 왜? 내 부모가 가진 필드로 들어가 있어서
+    console.log(f.a);
+    console.log(E.prototype);
+    console.log(f.__proto__);
+
+    function G(){
+        this.c="G.c";
+        this.a="G.a"; // F.a를 재정의
+        this.__proto__=new F();
+    }
+    const g= new G();
+    console.log(g);
+    console.log(g.a);
+    console.log(g.b);
+
+    // proto 링크 채이닝 - 프로토타입이 null 이 나올때까지 쓸 수 있다.
+    console.log(c.__proto__); // C.prototype
+    console.log(c.__proto__.__proto__); // B.prototype
+    console.log(c.__proto__.__proto__.__proto__); // A.prototype
+    console.log(c.__proto__.__proto__.__proto__); // Object.prototype
+    console.log(c.__proto__.__proto__.__proto__.__proto__); // null
+    console.log("예시");
+
+
+    // 위에 처럼 프로토타입을 체인을 하려면 조금 어려운 방법이 필요해서 객체를 상속받음 - 객체도 상속받을 수 있다. 프로토타입도 객체다 // __proto__ 프로토타입 객체
+    // 프로토 타입도 객체다!
+    console.log(g.__proto__); // G.prototype
+    console.log(g.__proto__.__proto__); // new f();
+    console.log(g.__proto__.__proto__.__proto__); // new E()
+    console.log(g.__proto__.__proto__.__proto__); // Object.prototype
+    console.log(g.__proto__.__proto__.__proto__.__proto__); // null
+
+
+    // 객체의 생성과 상속을 위해 프로토타입을 사용
+    // 프로토타입 체인 == 링크 == 객체간의 링크
+
+    // 객체 인스턴스와 프로토타입 간에 연결 : __proto__ 객체간의 링크로 chaining(탐색)
+    // 함수는 객체가 아니니까 함수이름.prototype 으로 연결
+
+  /*  __ 는 객체간의 링크 (프로토타입, 객체, Object 프로토타입 모두 객체)
+    프로토타입은 Object 프로토타입을 참조(모든 프로토타입의 부모.조상)
+    프로토타입은 미리 시제품으로 만든 객체
+
+    함수간의 이동은 .prototype
+    객체간 이동 __proto__
+  */
+
+  </script>
+
+
+</body>
+</html>

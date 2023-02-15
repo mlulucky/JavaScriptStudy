@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>비동기 실행을 동기화 하기</title>
+</head>
+<body>
+  <h1>멀티 스레드 간의 비동기된 상태를 동기화 하는 방법과 promise</h1>
+
+  <h2>
+      <button id="testBtn">알람!</button>
+      경고창 3초 뒤에 뜨고 경고창 뜨고 다시 2초 뒤에 경고창 뜨게 하려면...
+  </h2>
+  <p>
+      코드를 연이어 작성해서 동기된 동작을 기대하지만 setTimeout() 함수는 thread 를 생성하기 때문에
+      비동기된 동작을 보이면서 2초 뒤 경고가 먼저 뜨게 된다.
+  </p>
+
+<script> // main 은 쓰레드를 만들고, 또 쓰레드를 만든다. 반복문이 거의 동시에 실행되서,
+  testBtn.onclick=function(e) {
+      window.setTimeout(()=> {
+          alert("화면이 열리고 3초 뒤 경고!")
+      }, 3000);
+      // Thread.join() : java 는 위의 Thread 가 종료될 때 까지 기다리는 함수가 존재 (js는 없다.)
+      window.setTimeout(()=> {
+          alert("경고창이 열리고 2초 뒤 다시 경고!")
+      }, 2000);
+  }
+</script>
+    <h2><button id="testBtn2">알람!</button>콜백 지옥으로 비동기 코드를 동기화 하기!</h2>
+    <p>
+        멀티 스레드인 코드의 특정 시점(알람이 뜨는 시점)을 동기하고 싶다면 그 코드가 종료되는 시점(스레드 종료 시점이 아니라)에서
+        다시 함수를 호출하는 형식으로 코드를 동기화 할 수 있다.
+        이런 형상이 계속 반복되면 중첩으로 코드가 복잡해져서 콜백지옥이라 부른다.
+    </p>
+    <p>
+        자바스크립트의 대부분의 일(타이밍함수,AJAX,이벤트리스너(nodejs))이 멀티스레드로 동작한다.  // nodejs 에서 이벤트리스너 많이 사용한다. // (js 에서 멀티스레드와 콜백함수를 비일비재로 많이 사용한다.)
+        때문에 스레드의 종료 시점을 동기하기 위해 콜백지옥을 만드는 일이 발생한다.
+    </p>
+<script>
+    testBtn2.onclick=function(e) {
+        window.setTimeout(()=> { // 콜백 지옥 : 비동기 코드 -> 동기화된 코드
+            alert("3초뒤 알람");
+            window.setTimeout(()=> { // 코드가 종료되는 시점에서 다시 함수 호출
+                alert("알람이 뜨고 2초 뒤");
+                window.setTimeout(()=> {
+                    alert("또 2초뒤?")
+                },2000);
+            },2000);
+        }, 3000);
+    }
+</script>
+  <style>
+      #circleBox {
+        border-radius: 50%;
+        width: 0px;
+        height: 0px;
+        background-color: red;
+        margin-left: 0;
+        /*animation-name: moveBox;*/
+        /*animation-duration: 2s;*/
+        /*animation-fill-mode: forwards;*/
+      }
+      /*@keyframes moveBox {*/
+      /*    50% {width: 200px; height: 200px;} !* 50% 까지의 애니메이션 *!*/
+      /*    100% {*/
+      /*        width: 200px;*/
+      /*        height: 200px;*/
+      /*        margin-left: calc(100% - 200px); !* css 계산법 calc *!*/
+      /*    }*/
+      /*}*/
+  </style>
+    <h3>0~200 까지 커지는 원을 만들고 오른쪽 끝으로 이동(꼭 원이 다 커지면 이동하세요!)</h3>
+<!--    div>p#circleBox-->
+  <div>
+      <p id="circleBox"></p>
+  </div>
+<script>
+// 브라우저에서 애니메이션 작성법 : 1. transition(복잡한 X) / 2.animation / 3.js로 만드는
+    let w=0; // 원의 너비 높이가 200이 될때까지 키우기
+    const circleBox=document.getElementById("circleBox");
+    // setInterval(()=>{},10)
+    let circleBoxNum = setInterval(()=>{
+        circleBox.style.width=(++w)+"px";
+        circleBox.style.height=(++w)+"px";
+        // if(w==200) return; // return 해당함수만 종료하지 다음의 콜백함수를 종료하진 않는다.
+        if(w==200) clearInterval(circleBoxNum);
+    }, 10)
+    // 오른쪽 끝으로 이동하는 interval 을 만들어보세요~
+    // 크기가 200 일때 오른쪽으로 이동하는 interval 을 만들어 보세요!
+    let leftEnd=circleBox.parentElement.clientWidth-200;
+    let left=0;
+    setTimeout(()=> {
+        circleBox.style.marginLeft=(++left)+"px";
+        // circleBox.style.marginLeft=calc(100% - 200+"px");
+    },10);
+
+    // setInterval true false 가 아니라 무한반복으로 실행하는거 => setInterval 일꾼을 삭제하기
+    // 블럭태그 : 레이아웃을 블럭쌓듯이. 너비가 전체영역을 갖는다.. 블럭태그가 너비를 가지면 빈자리가 생기므로. 빈자리를 채우기 위해서 margin 을 준다. 블럭요소를 정렬하려고 margin
+
+</script>
+    <h2>멀티 스레드간의 동기화를 위한 콜백지옥 탈출을 위해 등장한 영웅!?(반쪽짜리 영웅) promise</h2>
+    <p>콜백지옥만 탈출하지 코드는 더 어려워진다..ㅠㅠ 진정한 구원자 async 함수가 등장한다!</p> <!-- promise 를 알아야 async 를 사용할 수 있다. -->
+    <h3><button id="testBtn3">알람!!</button>3초 뒤 알람이 뜨고 2초 뒤 알람</h3>
+<script>
+    testBtn3.onclick=function(e) {
+        const p=new Promise((resolve, reject)=> {
+            setTimeout(()=>{
+                alert("3초 뒤 알람!");
+                resolve("알람성공");
+            }, 3000)
+        }).then((resolveMsg)=> {
+            setTimeout(()=> {
+                alert(resolveMsg+"2초뒤 알람")
+            }, 2000)
+        }, ()=> {});
+    }
+
+</script>
+    <h3>볼을 클릭하면 작아졌다가 커지고 이동하는 볼~ (애니메이션 효과를 script + transition)</h3>
+    <style>
+      #redBall {
+          width: 200px;
+          height: 200px;
+          border-radius: 50%;
+          position: relative;
+          background-color: red;
+          left: 0;
+          transition: all ease-in 1s;
+          /* transition 은 처음에 지정된 스타일 속성만 애니메이션을 적용. 처음에 left 가 속성이 지정이 되있어야 한다.*/
+      }
+      #redBall.small { /* #redBall 아이디의 우선순위가 높기 때문에 .small -> #redBall.small 로 선택자 지정해줘야한다. */
+          width: 100px;
+          height: 100px;
+      }
+      #redBall.moveLeft {
+          left: calc(100% - 200px); /* calc 할때 () 괄호안에 계산식 을 띄어쓰기 해야한다. */ /* style 속성에 left 가 속성이 지정이 되있어야 한다. */
+      }
+
+    </style>
+  <div>
+      <p id="redBall"></p>
+  </div>
+  <script>
+      // redBall.onclick=function(e) {
+      //     // setTimeout(()=> {}, 1000); // 일꾼이 두개라서 동시에 작동한다. 비동기
+      //     this.classList.add("small");
+      //     setTimeout(() => {
+      //         this.classList.remove("small");
+      //         this.classList.add("moveLeft");
+      //     }, 1000);
+      // }
+      //
+      redBall.onclick=function(e) {
+          // promise 사용 //  프로미스라고 하면 {} 괄호안에 실행문이 실행된다.
+          new Promise((res,rej)=> {// 콜백함수의 매개변수에 // res 는 함수다. 실행할때 매개변수를 넣을 수 있따.
+              setTimeout(()=>{
+                  try {
+                      // this.classList.add("small"); // 성공
+                      this.a.classList.add("small");  // 실패  Redball this에 a가 없어서 => 실패. 두번째 콜백함수(reject) 실행
+                      res("안녕!"); // 이 시점에 상태 fulfilled
+                      // then 의 첫번째 콜백함수(resolve)가 실행된다.
+                  } catch(e) {
+                      rej(new Error("node 찾기 실패")); // rejected 상태 // 에러객체를 같이 보내느게 정설
+                      // then 의 두번째 콜백함수(reject) 또는 then() 뒤에서 .catch 의 콜백함수가 실행 (꼭 reject의 매개변수로 Error를 생성해야함)
+                  }
+                  // this.classList.add("small"); // this 는 Promise 일까 redBall?? => * redBall. (화살표 함수가 this 소실을 막아준다. 화살표함수는 bind함수가 없다)
+                  // res("안녕!"); // 상태메시지 // 클래스 스몰이 된 시점을 동기화 한다. 이 시점에서 동기가 된다 => then 에서 받는다. resolve를 실행하면 첫번째 콜백함수에서 받는다.
+              },1000);
+          }).then((resMsg)=> { // resolve를 호출했을 때 실행 // res 를 실행한 시점에 then 첫번째 콜백함수가 실행 // res 상태메세지도 전달되서 실행됨 // 오류는 reject로 받기 // resolve() 를 실행할때 보낸 매개변수를 첫번째 콜백함수의 매개변수가 받는다. // 안녕이 쏙 들어간다. 성공할때
+              // 첫번째 실행에서 처리된 결과나 상태메세지를 보낼때
+              setTimeout(() => {
+                  this.innerText = resMsg;
+                  this.classList.add("moveLeft");
+                  this.classList.remove("small");
+              }, 1000);
+          }).catch((errorMsg)=> { // * reject 말고 catch 로도 에러를 잡을 수 있다. catch 문에서 rej() new Error 를 동반해야한다. 그래야  두번째 콜백함수 실행또는 catch문을 실행한다. 실행 괄호안에 에러를 넣어줘야한다. rej(new Error("node 찾기 실패"));
+              console.log("catch 에 에러를 잡는다" + errorMsg);
+          }).finally(()=> {
+              console.log("성공(fulfilled)이든 실패(rejected)든 실행! finally");
+          })
+          // }, (errorMsg)=> { // reject 를 호출했을 때 실행 // * reject 로 에러잡는 방법
+          //     console.error(errorMsg); // error 메세지
+          // }).then(alert); // 함수표현식 (m)=> {alert(m)} => alert
+
+      }
+      // Promise 는 완벽한 동기화를 하기에는 부족함(async 함수보다)이 있고 코드가 더더 복잡해지는 경향이 있다 ex) promise then 지옥..
+      // reject finally, catch 같은 추가 기능을 깊이 있게 다루지 않겠습니다~(설명만 보세요~) // finally 는 언제든 실행
+      // 모질라사이트(웹표준 제시하는 사이트) Promise 로는 완벽한 동기화의 한계가 있어서 async 함수를 사용하세요! 하고 권장함.
+
+     /*
+      then 을 할때 프라미스 객체를 return을 할수있다
+      promsie 객체의 resolve 시점을 받는다. resolve가 실행되면 then 이 객체를 반환받는다
+      then 실행- 프로미스 반환 - then 실행 .... 반복
+
+    프라미스를 반환하면 그 다음 then에서 받는다.
+
+      chaining 하고싶으면 return new Promise 프로미스객체 반환해야함. 연속으로 동기화 하고 싶으면 then 안의 실행문에서 프라미스 객체를 반환해야한다.
+      그래야 그 다음 코드에서 다시 동기화 => 프라미스 지옥
+      => 해결? 프라미스화 (프라미스 채이닝을 간단하게 해준다)
+
+      프라미스를 함수에 넣고 실행. 프라미스화가 된 함수
+
+      자바 stream API : 중간연산자가 stream 을 반환한다
+      Stream.map().filter()...
+      map 정수로 바꾼 스트림을 반환 -> filter 를 만족한 strea을 반환
+
+      */
+
+  </script>
+
+</body>
+</html>
