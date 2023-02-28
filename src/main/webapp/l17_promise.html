@@ -95,7 +95,7 @@
         // circleBox.style.marginLeft=calc(100% - 200+"px");
     },10);
 
-    // setInterval true false 가 아니라 무한반복으로 실행하는거 => setInterval 일꾼을 삭제하기
+    // setInterval 은 true false 가 아니라 무한반복으로 실행하는거 => setInterval 일꾼을 삭제하기
     // 블럭태그 : 레이아웃을 블럭쌓듯이. 너비가 전체영역을 갖는다.. 블럭태그가 너비를 가지면 빈자리가 생기므로. 빈자리를 채우기 위해서 margin 을 준다. 블럭요소를 정렬하려고 margin
 
 </script>
@@ -152,35 +152,38 @@
       // }
       //
       redBall.onclick=function(e) {
-          // promise 사용 //  프로미스라고 하면 {} 괄호안에 실행문이 실행된다.
-          new Promise((res,rej)=> {// 콜백함수의 매개변수에 // res 는 함수다. 실행할때 매개변수를 넣을 수 있따.
+          new Promise((res,rej)=> { // 화살표 함수 안에서 this 는 한칸 뒤의 {} 객체 (화살표 함수가 this 소실을 막아준다. 화살표함수는 bind함수가 없다)
               setTimeout(()=>{
-                  try {
+                  try { // 📍에러발생 경우 예제, 에러 발생시, 아래 코드는 실행되지 않는다.
+                      // this Promise 일까 redBall 일까?  원래는 Promise 여야 하지만. Promise 콜백함수가 ()=>{} 화살표 함수로 되어있어서 블럭 한칸 뒤인 redBall
                       // this.classList.add("small"); // 성공
                       this.a.classList.add("small");  // 실패  Redball this에 a가 없어서 => 실패. 두번째 콜백함수(reject) 실행
-                      res("안녕!"); // 이 시점에 상태 fulfilled
-                      // then 의 첫번째 콜백함수(resolve)가 실행된다.
+                      res("안녕!"); // fulfilled 상태 // resolve() 함수 에서 동기화 시점 => then 에서 받는다. resolve를 실행하면 첫번째 콜백함수에서 받는다.
+                      // 🍋 then 의 첫번째 콜백함수(resolve)가 실행된다.
                   } catch(e) {
-                      rej(new Error("node 찾기 실패")); // rejected 상태 // 에러객체를 같이 보내느게 정설
-                      // then 의 두번째 콜백함수(reject) 또는 then() 뒤에서 .catch 의 콜백함수가 실행 (꼭 reject의 매개변수로 Error를 생성해야함)
+                      rej(new Error("node 찾기 실패")); // rejected 상태
+                      // 🍋 then 의 두번째 콜백함수(reject) 또는 catch 의 콜백함수가 실행 (꼭 reject의 매개변수로 new Error 를 생성해야함)
                   }
                   // this.classList.add("small"); // this 는 Promise 일까 redBall?? => * redBall. (화살표 함수가 this 소실을 막아준다. 화살표함수는 bind함수가 없다)
-                  // res("안녕!"); // 상태메시지 // 클래스 스몰이 된 시점을 동기화 한다. 이 시점에서 동기가 된다 => then 에서 받는다. resolve를 실행하면 첫번째 콜백함수에서 받는다.
               },1000);
-          }).then((resMsg)=> { // resolve를 호출했을 때 실행 // res 를 실행한 시점에 then 첫번째 콜백함수가 실행 // res 상태메세지도 전달되서 실행됨 // 오류는 reject로 받기 // resolve() 를 실행할때 보낸 매개변수를 첫번째 콜백함수의 매개변수가 받는다. // 안녕이 쏙 들어간다. 성공할때
-              // 첫번째 실행에서 처리된 결과나 상태메세지를 보낼때
+          }).then((resMsg)=> { // 동기된 코드 // resgMsg : 첫번째 실행에서 처리된 결과나 상태메세지를 보내는 것
+              // resolve() 함수를 실행할때 보낸 매개변수를 첫번째 콜백함수의 매개변수가 받는다.
+              // 첫번째 실행에서 처리된 결과를 보내거나 상태메세지를 보낼때
               setTimeout(() => {
                   this.innerText = resMsg;
                   this.classList.add("moveLeft");
                   this.classList.remove("small");
               }, 1000);
-          }).catch((errorMsg)=> { // * reject 말고 catch 로도 에러를 잡을 수 있다. catch 문에서 rej() new Error 를 동반해야한다. 그래야  두번째 콜백함수 실행또는 catch문을 실행한다. 실행 괄호안에 에러를 넣어줘야한다. rej(new Error("node 찾기 실패"));
+          }
+          // , (errMsg)=>{ // .then 의 두번째 콜백함수 reject
+          //     console.log(errMsg);
+          // }
+          // reject 콜백함수 대신 catch 로 에러 잡는 방법
+          ).catch((errorMsg)=> { // * reject 말고 catch 로도 에러를 잡을 수 있다. catch 문에서 rej() new Error 를 동반해야한다. 그래야  두번째 콜백함수 실행또는 catch문을 실행한다. 실행 괄호안에 에러를 넣어줘야한다. rej(new Error("node 찾기 실패"));
               console.log("catch 에 에러를 잡는다" + errorMsg);
           }).finally(()=> {
               console.log("성공(fulfilled)이든 실패(rejected)든 실행! finally");
           })
-          // }, (errorMsg)=> { // reject 를 호출했을 때 실행 // * reject 로 에러잡는 방법
-          //     console.error(errorMsg); // error 메세지
           // }).then(alert); // 함수표현식 (m)=> {alert(m)} => alert
 
       }
@@ -188,23 +191,23 @@
       // reject finally, catch 같은 추가 기능을 깊이 있게 다루지 않겠습니다~(설명만 보세요~) // finally 는 언제든 실행
       // 모질라사이트(웹표준 제시하는 사이트) Promise 로는 완벽한 동기화의 한계가 있어서 async 함수를 사용하세요! 하고 권장함.
 
+
+
      /*
+      📍 프라미스 체이닝
       then 을 할때 프라미스 객체를 return을 할수있다
-      promsie 객체의 resolve 시점을 받는다. resolve가 실행되면 then 이 객체를 반환받는다
+      promsie 객체를 반환해야지 resolve 시점을 받는다. resolve가 실행되면 then 이 객체를 반환받는다
       then 실행- 프로미스 반환 - then 실행 .... 반복
 
-    프라미스를 반환하면 그 다음 then에서 받는다.
-
-      chaining 하고싶으면 return new Promise 프로미스객체 반환해야함. 연속으로 동기화 하고 싶으면 then 안의 실행문에서 프라미스 객체를 반환해야한다.
+      chaining 하고싶으면 .then() 함수에서 return new Promise 프로미스객체 반환해야함.
+      (== 연속으로 동기화 하고 싶으면 then 안의 실행문에서 프라미스 객체를 반환해야한다.)
       그래야 그 다음 코드에서 다시 동기화 => 프라미스 지옥
       => 해결? 프라미스화 (프라미스 채이닝을 간단하게 해준다)
-
-      프라미스를 함수에 넣고 실행. 프라미스화가 된 함수
+      📍 프라미스화 : new Promise 를 return(반환)하는 함수. (new promise 를 함수에 넣은 것)
 
       자바 stream API : 중간연산자가 stream 을 반환한다
       Stream.map().filter()...
-      map 정수로 바꾼 스트림을 반환 -> filter 를 만족한 strea을 반환
-
+      .map() 정수로 바꾼 스트림을 반환 -> .filter() 를 만족한 스트림을 반환
       */
 
   </script>

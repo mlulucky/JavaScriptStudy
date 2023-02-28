@@ -166,8 +166,8 @@
   </ul>
   <h2>table node 에 행과 셀을 검색</h2>
   <ul>
-    <li>tableNode.row[수] : 해당 테이블의 몇번째 tr</li>
-    <li>tableNode.row[수].cell[수] : 해당 테이블의 몇번째 tr(table row) 에 몇번째 td(table data)</li>
+    <li>tableNode.rows[수] : 해당 테이블의 몇번째 tr</li>
+    <li>tableNode.rows[수].cell[수] : 해당 테이블의 몇번째 tr(table row) 에 몇번째 td(table data)</li>
     <!-- table의 행(row, 가로) == 튜플, 객체 -->
   </ul>
   <table id="userTable">
@@ -190,6 +190,8 @@
   </table>
   <script>
     // console.log(userTable);
+    console.log("test2",userTable);
+    console.log("test",userTable.rows[2]);
     userTable.rows[2].style.background="red";
     userTable.rows[1].cells[0].style.border = "1px solid purple";
   </script>

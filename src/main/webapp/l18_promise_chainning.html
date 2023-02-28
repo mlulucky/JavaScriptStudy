@@ -11,7 +11,7 @@
     <button id="testBtn">알람!</button>
   </h2>
   <h2>프라미스 체이닝의 방법</h2>
-  <p>Promise.then() 함수가 Promise 객체를 반환하면 다시 .then 으로 동기화 할 수 있다.</p> <!-- Promise가 동기화를 해준다. -->
+  <p>📍Promise.then() 함수가 Promise 객체를 반환하면 다시 .then 으로 동기화 할 수 있다.</p> <!-- Promise가 동기화를 해준다. -->
   <pre>
       new Promise((resolve)=> {
       ......
@@ -34,7 +34,7 @@
             .....
             resolve(3 처리내역)
         });
-      }).then(()=>{
+      }).then((3 처리내역)=>{
             .... 4번째 처리 끝~
       }) // 마지막에는 resolve를  promise 를 반환할떄까지 계속 쓸수 있다 ==> 프라미스 체이닝
 
@@ -42,6 +42,25 @@
   <script>
       // alert 2초뒤 나오면 다시 2초뒤 또 다시 2초뒤 또 다시 2초뒤에 알람이 발생하게 하고 싶다
       testBtn.onclick=testBtn1Handler;
+      /* 콜백지옥..!!
+             testBtn.onclick=function(e){
+                 setTimeout(()=>{
+                     alert("2초뒤 알람!");
+                     setTimeout(()=>{
+                         alert("2초뒤 알람!!");
+                         setTimeout(()=>{
+                             alert("2초뒤 알람!!!");
+                             setTimeout(()=>{
+                                 alert("2초뒤 알람!!!!");
+                                 setTimeout(()=>{
+                                     alert("2초뒤 알람!!!!!");
+                                 },2000);
+                             },2000);
+                         },2000);
+                     },2000);
+                 },2000);
+             }
+     */
 
       function testBtn1Handler(e) {
         new Promise((res)=>{
@@ -50,7 +69,7 @@
                 res(); // res() == (res)=>{ } 콜백함수 // res() 는 그 다음 then 안에 있는 콜백함수다. // res 를 호출하면. 그 다음의 then의 콜백함수 (res)=>{} 를 실행한다.
             },2000);
         }).then((resM)=> { // then 으로 동기화 하려면 res() 로 연결 // 실행할 res() 를넣어야지 다음코드 then 에서 동기화 된다.
-            return new Promsie((res)=> { // 프로미스를 반환하면 끝이난다. 동기화의 뜻이 then,에서 실행하는거. then에서 res를  실행해야함.
+            return new Promise((res)=> { // 프로미스를 반환하면 끝이난다. 동기화의 뜻이 then,에서 실행하는거. then에서 res를  실행해야함.
                 setTimeout(()=>{
                     alert("2초뒤 알람!!");
                     res(); // 다음 then 의 콜백함수에서 res 를 받는다.
@@ -69,20 +88,12 @@
             },2000);
         })
       }
+      // resolve() 함수를 실행해야 .then() 에서 동기화 할수있다.
+      // resolve() 함수는 new Promise 콜백함수의 매개변수
+      // then() 함수에는 실행할 resolve() 가 없다
+      // then() 함수 안에 new Promise() 를 return(반환)하기!
+      // promise 체이닝을 하기 위해서 .then() 함수안에 new Promise 를 계속 return 반환
 
-
-      /*setTimeout(()=> {
-          alert("2초뒤");
-          setTimeout(()=> {
-              alert("2초뒤");
-              setTimeout(()=> {
-                  alert("2초뒤");
-                  setTimeout(()=> {
-                      alert("2초뒤");
-                  }, 2000);
-              }, 2000);
-          }, 2000);
-      }, 2000);*/
 
   </script>
   <h2>프라미스 객체를 반환하는 프라미스화</h2>
@@ -94,7 +105,7 @@
   <script>
       // then에서 반환 할 Promise 객체를 함수에서 반환하도록 한다.
       function setTimeAlertPromise(sec=2) { // 프라미스화!!!! 함수를 실행하면 프라미스 객체를 반환한다. // 함수에 return 에 new Promise{} 담은 것
-          return ( // return 이 객체를 반환
+          return ( // return 으로 new Promise 객체를 반환
               new Promise((res)=> {
               setTimeout(()=>{
                   alert(`${sec}초뒤 알람!`); // 시간을 다르게 주고 싶다 => 매개변수를 이용해서 실행시간을 바꾼다 setTimeAlertPromise(매개변수) // 동기화하고 싶은 시점 => alert 다음에 resolve() 실행
@@ -109,7 +120,7 @@
           setTimeAlertPromise(0) // () 괄호안에는 시간을 매개변수로 담음 // 시간이 동일하다면 한번에 모두 실행되고. 시간을 달리하면 순차적으로 실행 - 동기코드 가 된다.
               .then((resM)=>{ // setTimeAlertPromise() == 프라미스 객체
                  return setTimeAlertPromise(1); // 프라미스 반환하기 때문에 .then 이 올 수 있다!
-              }).then((resM)=>{ // (resM)=>{ 동기화 하고 싶은 실행문 } : 콜백함수. 실행문에서 Promise 객체를 반환  =>
+              }).then((resM)=>{ // (resM)=>{ 동기화 하고 싶은 실행문 } : 콜백함수. 실행문에서 Promise 객체를 반환
                   return setTimeAlertPromise(2);
               }).then((resM)=>{
                   return setTimeAlertPromise(3);

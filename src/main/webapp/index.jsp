@@ -36,9 +36,9 @@
             <li><a href="l17_promise.html">17.Promise 로 멀티스레드 동기화</a></li>
             <li><a href="l18_promise_chainning.html">18.Promise 채이닝과 프라미스화로 비동기 코드(멀티스레드)를 계속 동기화하기</a></li>
             <li><a href="l19_ajax_xmlhttprequest.html">19.Ajax 와 XMLHttpRequest 객체(프론트+백엔드)</a></li>
-            <li><a href="">20.Ajax 와 fetch api 와 Promise</a></li>
-            <li><a href="">21.Ajax 와 async 함수(js 수업 끝~)</a></li>
-            <li><a href="">22.prototype 의 상속</a></li>
+            <li><a href="l20_ajax_fetch.html">20.Ajax 와 fetch api 와 Promise</a></li>
+            <li><a href="l21_async_function.html">21.async 함수</a></li>
+            <li><a href="l22_node_append.html">22.node 생성과 추가</a></li>
             <%--            (li>a{$.})*4--%>
         </ul>
     </nav>
@@ -62,7 +62,7 @@
     웹 이슈 - js 이슈가 많다. js 가 대세
     js 를 잘하면 좋다.
 
-        자바를 잘하려면
+    자바를 잘하려면
     다른 언어를 배우는 것도 좋다.(자바에 대해 더 배울수있다)
     (자바의 특징과 다른 언어들의 특징을 비교하며 배운다. => 이때 장단점이 보여야 비로소 내 언어가 된다)
 
@@ -71,12 +71,12 @@
 
     언어를 배우는 것에 두려움이 없어야 한다.
 
-        js 배우면 배울 수 있다 (특히 L12 js 클래스 ~ 22 Ajax, async)
-        -> node js -> express js
-        -> react js
-        -> next js
-        -> view js
-        -> angular js
+    js 배우면 배울 수 있다 (특히 L12 js 클래스 ~ 22 Ajax, async)
+    -> node js -> express js
+    -> react js
+    -> next js
+    -> view js
+    -> angular js
 
     회사에서 찾는다
 */

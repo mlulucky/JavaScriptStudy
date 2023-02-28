@@ -11,9 +11,9 @@
         <li>super : 부모의 필드 접근자</li>
         <li>bind : this 가 정의하고 있는 객체</li>
         <li>function.bind(Object) : 해당 함수에 this 로 특정 Object 고정(bind)할 수 있다.</li> <!-- 함수안에 bind 함수가 있다. (화살표함수 제외) -->
-        <li>this 소실 : 타입에서 내부의 필드에서 this 가 다른 객체를 가리키는 현상</li>
-        <li>함수에서 this 가 window 인 이유는 전역인 window 에서 함수를 실행했기 때문에</li>
-        <li>타입에서 선언된 함수에서 this 가 해당 타입의 멤버인 이유는 해당하는 타입(함수)를 객체로 만들고 객체에서 함수를 실행하기 때문에(주체가 객체라서)</li>
+        <li>**this 소실 : 타입에서 내부의 필드에서 this 가 다른 객체를 가리키는 현상</li>
+        <li>함수에서 this 가 window 인 이유는 전역인 window 에서 함수를 실행했기 때문에 (함수로 객체 생성전)</li>
+        <li>타입에서 선언된 함수에서 this 가 해당 타입의 멤버인 이유는 해당하는 타입을 객체로 만들고 객체에서 함수를 실행하기 때문에(주체가 객체라서)</li>
         <li>콜백함수에서 this 가 콜백함수를 실행하는 객체인 이유 해당 객체의 멤버로 콜백함수를 정의했기 때문에</li>
         <li>함수의 bind 로 특정 객체를 넣으면 그 함수에 this 는 매개변수로 넣은 객체로 고정된다.</li>
     </ul>
@@ -21,8 +21,8 @@
     <ul>
         <li>콜백함수를 정의할 때 this 는 콜백함수를 실행하는 객체가 된다.****</li>
         <li>이때 this 가 콜백함수를 정의하는 타입이기를 기대할때 this 소실이 발생했다고 한다. </li>
-        <li>예) 이벤트를 정의한 함수내부의 this 가 그 함수를 정의한 타입으로 기대하지만 이벤트가 발생한 노드개체가 this가 된다.</li>
-        <li>예) 타이밍함수를 정의한 함수내부의 this 가 그 함수를 정의한 타입이기를 기대하지만 타이밍함수를 실행, 생성하는 window 가 된다.</li>
+        <li>예) 이벤트를 정의한 함수내부의 this 가 그 함수를 정의한 타입으로 기대하지만 이벤트가 발생한 노드개체가 this 가 된다.</li>
+        <li>예) 타이밍함수(setInterval)를 정의한 함수내부의 this 가 그 함수를 정의한 타입이기를 기대하지만 타이밍함수를 실행, 생성하는 window 가 된다.</li>
     </ul>
     <h2>this 소실을 해결하는 2가지 방법</h2>
     <ul>
@@ -35,150 +35,204 @@
     // 타이머 타입
     // 타이머 객체를 생성후 호출하면 화면출력되도록 정의   (타이머 : ...5,4,3,2,1)
     class Timer { // 자바에서는 매개변수 기본값을 못준다. js에서만 가능
-        time;id;
-        constructor(id, time=3) {
+        time;id; // 필드 (js 생략가능) // 클래스의 전역에는 this 필드접근자 사용x. this는 대부분 생성자안에서만 사용
+        constructor(id, time=3) { // 기본값 3. 값을 안적으면 time은 3이 된다.
             this.time=time;
             this.id=id;
-            // this.start.bind(this) // bind() 함수 : this 를 어떤것으로 하겠냐?
         }
-        printDom() {
+        printDom() { // Timer.printDom()
             // this 로 필드가 접근 가능
-            const node = document.getElementById(this.id);
-            node.innerText=this.time;
+            const node = document.getElementById(this.id); // Timer.id == TimerStr  태그 선택 // this - new Timer() 객체 // PrintDom 함수를 실행하는 포함하는 객체
+            // console.log("노드",node); // <strong id="timerStr"></strong>
+            // console.log("this",this); // Timer {time: 5, id: 'timerStr'} // this 는 new Timer() 객체
+            node.innerText=this.time; //  <strong id="timerStr">5</strong>
         }
         start(){
-            // setInterval(function(){},1000);
-            // this.id; // this 로 접근 가능
+            // ***this 소실 : this 가 실행하는 객체를 bind 하면서 생기는 문제 (this 소실핵심!!!)
+            // this는 (콜백)함수가 포함되어 있는 객체를 가리킨다.
+            // setInterval 을 실행하는 객체는 window 기 때문에!! setInterval 의 콜백함수의 this 는 window 를 가리킨다.
             // bind 로 this 를 Timer 의 멤버로 고정한 새로운 함수를 콜백함수로 사용하면 this 소실을 막을 수 있다.
-            const newFunc=this.setTime.bind(this); // bind 로 this 를 고정!
+            this.id; // this 로 접근 가능 // this 는 Timer 객체 // Timer {time: 5, id: 'timerStr'}
+            const newFunc=this.setTime.bind(this); // 여기서 this 는 클래스 Timer 객체
+            // setTime() 함수를 bind 로 this 를 고정! // 왜냐면 ? setInterval 을 실행하는 객체 window 라서!
+            // 클래스 Timer 의 함수 setTime 을 클래스 Timer 로 바인딩한다.
+            // setTime 함수 안에 this 가 클래스 Timer 를 가리키는 새로운 함수를 만든다!!
+
+            // this.setTime();
             window.setInterval(newFunc,1000);
-           /* window.setInterval(function(){ // window가 setInterval 을 실행한다. window의 콜백함수다. => 따라서 여기서 this는  윈도우의 this
-                this.time--; // this : window
-                this.printDom(); // 윈도우에 print 프린터 함수가 있어서 this.print() 로하면 인쇄하는 브라우저 창 뜬다.
+            // 👉newFunc, 즉 setTime 함수를 실행하는 setInterval은 window 필드라서 this 가 window가 된다
+            // 즉, new Func 의 this 가 window가 되어버린다!!
+            // 해결 -> newFunc setTime 함수를 bind(this) 하면 (여기서 this 는 Timer 객체)
+            // this 소실을 막을 수 있다.
 
-                // this 로 Timer 의 필드 접근 불가 왜 ?
-                // this 소실 : this 가 실행하는 객체를 bind 하면서 생기는 문제
-                // setInterval 을 실행하는 객체는 window 기 때문에 setInterval 의 콜백함수의 this 는 window 를 가리킨다.
-
-            }, 1000);*/
+            // newFunc 는 클래스 Timer로 바인딩된 setTime() 함수
+            // window.setInterval(function(){  // window.setInterval(콜백함수,1000);
+            //  window가 setInterval 을 실행한다. window의 콜백함수다. => 따라서 여기서 this는  윈도우의 this
+            //  this.time--; // this : window
+            //  this.printDom(); // 윈도우에 print 프린터 함수가 있어서 this.print() 로하면 인쇄하는 브라우저 창 뜬다.
+            // }, 1000);
+            // *** => this 소실 해결방법 첫번째! : setInterval 의 콜백함수에 있는 this를  setTime 이라는 함수를 생성해서 담는다.
         }
-
-        setTime() {
-            this.time--; // this : window
+        setTime() { // setInterval 의 콜백함수에 들었던 this를 따로 빼서 만든 함수
+            this.time--; // this : setTime() 함수를 포함하는 객체 Timer
             this.printDom(); // 윈도우에 print 프린터 함수가 있어서 this.print() 로하면 인쇄하는 브라우저 창 뜬다.
+            // console.log("setTime",this);
         }
-
     }
-
-
-
-
-
-
-
-   /* function Timer(id, time=3) { // 자바에서는 매개변수 기본값을 못준다. js에서만 가능
-       this.time=time;
-       this.id=id;
-       this.printDom = function () {
-           const node = document.getElementById(id);
-           node.innerText=time;
-       }
-       this.start=function(){
-           // setInterval(function(){},1000);
-           setInterval(function(){
-               this.time--;
-               this.printDom(); // 윈도우에 print 프린터 함수가 있어서 this.print() 로하면 인쇄하는 브라우저 창 뜬다.
-           }, 1000);
-       }
-    }*/
-
-    const timer = new Timer("timerStr",5);
+    const timer = new Timer("timerStr",5); // Timer {time: 5, id: 'timerStr'}
     timer.printDom();
     timer.start();
-
+/*
+    setInterval 메서드 안에서는
+    this 로 Timer 의 필드 접근 불가 왜 ? => this 소실!!
+    => *** 이유 ****
+    setInterval(콜백함수,밀리초) 은 윈도우 객체의 필드
+    => setInterval의 콜백함수는 윈도우의 콜백함수다!
+    콜백함수는 윈도우에서 실행되고 있기 때문에 this 는 window !!!!
+*/
 
 </script>
 
     <h3>timer 예제 2</h3>
+<!-- ** setInterVal 1초 1씩 줄어는 것을 출력하는 것이 목표!-->
     <div>
         <button id="startBtn">start</button> <!-- 타이머 실행 -->
         <strong id="timerTxt"></strong>
-        <button id="stopBtn">stop</button> <!-- 타이머 멈춤 -->
+        <button id="stopBtn">stop</button> <!-- 타이머 중간 멈춤 -->
     </div>
-
 <script>
-    // 타이머 함수 / 함수랑 class 는 모양만 다르다.. 같은거
+    // 타이머 함수 / 함수랑 class 는 모양만 다르다. 같은거
     function TimerApp(startBtnId,stopBtnId,timerTxtId,time=5) {
-        this.startBtn = document.getElementById(startBtnId);
-        this.stopBtn = document.getElementById(stopBtnId);
-        this.timerTxt = document.getElementById(timerTxtId);
+        this.startBtn=document.getElementById(startBtnId); // startBtn은 도큐먼트의 노드.태그
+        this.stopBtn=document.getElementById(stopBtnId);
+        this.timerTxt=document.getElementById(timerTxtId);
         this.time=time;  // => 여기서 this 는 함수 TimerApp 객체가 되었을 때 필드(멤버)로 정의된 것
 
-        // this 소실의 구원자~!! => bind 대신 화살표함수!!
-        this.startBtn.onclick=(e)=> {
-            // 화살표 함수의 this 는 실행하는 객체를 포함하는 필드를 this 로 인식한다. (한번 건너띈다)
-            // prototype 을 생성하는 함수(function)은 실행하는 함수의 필드 this를 실행하는 함수의 객체로 bind 하는 함수를 포함하고있다. (함수가 타입이라서)
-            // == 화살표 함수는 타입이 될수 없어서 bind 함수도 없어서 this를 바인딩하지 못해 밖에 있는 함수의 필드가 this 가 된다. (화살표 함수는 타입이 아니라서)
-            // == 화살표 함수의 this 는 화살표 함수를 재정의한 객체를 포함하는 함수의 this 다. (화살표 함수의 this는 없다) // 화살표 함수에는 this가 없어서 this는 바깥쪽 this 를 가리킨다.
-            // == 화살표 함수의 this 를 정의(바인드)하지 못해서 그 밖에 있는 함수가 this 가 된다.
-            this.timerTxt.innerText=this.time; // onclick 함수를 실행하는 객체 startBtn 을 this가 bind 한다. (this == startBtn)
+        this.startBtn.onclick=(e)=>{
+            // this.timerTxt.innerText=this.time; // this TimerApp;
+
+            // const newFunc1=timer;
+            // // setTime() 함수를 bind 로 this 를 고정! // 여기서 this 는 클래스 Timer
+            // // 클래스 Timer 의 함수 setTime 을 클래스 Timer 로 바인딩한다.
+            // // setTime 함수 안에 this 가 클래스 Timer 를 가리키는 새로운 함수를 만든다!!
+            //
+            // window.setInterval(newFunc1,1000); // newFunc 는 클래스 Timer로 바인딩된 setTime() 함수
+
+
+
+            // let intervalNum = setInterval(()=>{
+            //     timer();
+            //     console.log(this.time);
+            //     // this.timerTxt.innerText=this.time;
+            // },1000);
+            console.log(intervalNum);
         }
 
+        let timer = function(){
+            this.time--;
+            this.timerTxt.innerText=this.time;
+        };
+
+
+
+        // ** this 소실의 구원자~!! => bind 대신 화살표함수!!
+     /*    this.startBtn.onclick=(e)=> {
+             // 화살표 함수의 this 는 실행하는 객체를 포함하는 필드를 this 로 인식한다. (한번 건너띈다)
+             // prototype 을 생성하는 함수(function)은 실행하는 객체의 필드를 this 로 bind 하는 함수를 포함하고있다. (함수가 타입이라서)
+             // == 화살표 함수는 타입이 될수 없어서 bind 함수도 없어서 this를 바인딩하지 못해 밖에 있는 함수의 필드가 this 가 된다. (화살표 함수는 타입이 아니라서)
+             // == 화살표 함수의 this 는 화살표 함수를 재정의한 객체를 포함하는 함수의 this 다. (화살표 함수의 this는 없다) // 화살표 함수에는 this가 없어서 this는 바깥쪽 this 를 가리킨다.
+             // == 화살표 함수의 this 를 정의(바인드)하지 못해서 그 밖에 있는 함수가 this 가 된다.
+             this.timerTxt.innerText=this.time; // onclick 함수를 실행하는 객체 startBtn 을 this가 bind 한다. (this == startBtn)
+         }*/
+
         /* bind 예시1
-       this.startBtnHandler = function (e) { // 재사용할 수있으니까 함수 만들어 담는다. // == this.startBtn.onclick
-           // setInterVal 1초 1씩 줄어는 것을 출력하는 것이 목표!
-           // this 소실 : onclick 을 실행하는 버튼을 this 바인드 하고 있다.
-           console.log(this);
-           alert("스타트!"+this.time); // this 는 startBtn
-           this.timerTxt.innerText = this.time;
+        this.startBtnHandler = function (e) { // 재사용할 수있으니까 함수 만들어 담는다. // == this.startBtn.onclick
+            // ** setInterVal 1초 1씩 줄어는 것을 출력하는 것이 목표!
+            // this 소실 : onclick 을 실행하는 버튼을 this 가 바인드 하고 있다.
+            console.log("this",this);  // bind(this)후 this 는 TimerApp
+            alert("스타트!"+this.time); // bind(this)전 this 는 startBtn
+            this.timerTxt.innerText=this.time; // this startBtn 인 경우 에러발생! 왜? startBtn 에  timerTxt, time 이 없으니까
+            // startBtnHandler 함수 안에 this 는
+            // startBtnHandler 를 실행하는 onclick이 startBtn에서 발생하여 this 는 startBtn 을 가리킨다.
+            // this 소실 :  this 는 this 를 포함한 타입(함수,클래스)을 실행하는 객체 자신을 가리킨다.
        }
-       this.startBtn.onclick = this.startBtnHandler.bind(this); // onclick 이전에 startBtnHandler 함수가 정의되어야 함.
-       */
-        /* bind 예시2
+       this.startBtn.onclick=this.startBtnHandler.bind(this); // onclick 이전에 startBtnHandler 함수가 정의되어야 함.
+        */
+
+
+        /* bind 예시2 : 함수뒤에 바로 .bind() 붙이기
         this.startBtn.onclick = function (e) { // 재사용할 수있으니까 함수 만들어 담는다. // == this.startBtn.onclick
             // ◆ setInterVal 1초 1씩 줄어는 것을 출력하는 것이 목표!
             // this 소실 : onclick 을 실행하는 버튼을 this 바인드 하고 있다.
             console.log(this);
             alert("스타트!"+this.time); // this 는 startBtn
             this.timerTxt.innerText = this.time;
-        }.bind(this); // bind(Timer.this) 하면 함수의 this 를 실행하는 객체가 아니라 Timer 로 고정
+        }.bind(this); // bind(TimerApp.this) 하면 함수의 this 를 실행하는 객체가 아니라 Timer 로 고정
         */
 
-        // bind(this) 에서 this
-        // ◆◆ this는 함수를 실행하고 있는. 실행되고 있는 객체 자신을 가리킨다.
-    }
+    } // TimerApp() 함수
 
-    new TimerApp("startBtn", "stopBtn", "timerTxt", 3);
+    new TimerApp("startBtn", "stopBtn", "timerTxt", 3); // this == TimerApp 객체
+    // TimerApp("startBtn", "stopBtn", "timerTxt", 3); // this == window
 
 </script>
 
 <script> // bind 추가 예제
-    // "use strict";
-    // this 가 전역인 window 일 때 undefined 를 반환 (window == 전역)
+    // "use strict"; // this 가 전역인 window 일 때 undefined 를 반환 (window == 전역)
     const person={name:"경민", birth:1986};
-    const ageCalc=function(){
-        console.log(this); // this 는 ageCalc 함수를 실행하는 전역인 window
+    const ageCalc=function(){ // 함수로만 사용중
+        console.log("ageCalc_this",this); // * this 는 ageCalc 함수를 실행하는 전역인 window
         let nowYear = new Date().getUTCFullYear(); // 2023
         // return person.name+"님의 나이는" + (nowYear-person.birth)+"입니다.";
         return this.name+"님의 나이는" + (nowYear-this.birth)+"입니다.";
     } // .bind(person); : this 를 person 가리키는 것으로 고정하는 것.
 
-    // ageCalc 의 this 를 person으로 bind 해보세요
-    console.log(ageCalc()); // ageCalc 객체 생성없이 함수 호출 => ageCalc()가 실행되고 있는 곳 window
+    // ◆ ageCalc 의 this 를 person으로 bind 해보세요
+    console.log("ageCalc",ageCalc()); // * ageCalc 객체 생성없이 함수 호출 경우  => ageCalc()가 실행되고 있는 곳 window. this 는 window 를 가리킨다
 
     // ◆ 변수에 참조하는 이유 : 재사용 가능, 함수 2가지를 다 쓰고 싶을때(ageCalc, person 으로 bind 된 personAgeCalc 함수 둘다)
-    const personAgeCalc=ageCalc.bind(person);
-    // => person이 bind 된 새로운 함수 personAgeCalc 가 생성 // == ageCalc=function(){}.bind(person);
-    console.log(personAgeCalc());
+    const personAgeCalc=ageCalc.bind(person); // person 객체로 bind. this == Person() 객체
+    // => person이 bind 된 새로운 함수 personAgeCalc 생성 // == ageCalc=function(){}.bind(person);
+    console.log("personAgeCalc",personAgeCalc());
 
-
-    const person2={name:"은정", birth}// 마치 this 를 매개변수처럼 사용가능
+    const person2={name:"은정", birth:1993};// 마치 this 를 매개변수처럼 사용가능
     const person2AgeCalc=ageCalc.bind(person2);
-    console.log(personAgeCalc());
-
-
+    console.log(person2AgeCalc());
 
 </script>
+
+    <h2>타이머 어플 3</h2>
+    <form name="timerForm">
+        <p>
+            시간 : <input type="number" name="time" value="5000"> 밀리초
+        </p>
+        <p>
+            실행 간격 : <input type="number" name="interval" value="1000"> 밀리초
+        </p>
+        <p>
+            출력 : <input type="text" name="out" readonly>
+        </p>
+        <p>
+            <button type="button" name="start">시작</button>
+            <button type="button" name="stop">멈춤</button>
+            <button type="button" name="exit">종료</button>
+        </p>
+    </form>
+    <script>
+        class TimerApplication{
+            constructor(formName) {
+                this.form=document.forms[formName];
+                this.startBtn=form.start;
+                this.stopBtn=form.stop;
+                this.exitBtn=form.exit;
+                this.outNode=form.out;
+                this.timeNode=form.time;
+                this.intervalNode=form.interval;
+            }
+        }
+        //이미지 슬라이드를 자동으로 이동하게 만들어보세요 2초에 한번씩~
+        //감동의 도가니~
+    </script>
 
 </body>
 </html>

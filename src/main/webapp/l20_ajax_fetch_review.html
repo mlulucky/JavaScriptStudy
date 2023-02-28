@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>Promise 화 된 비동기 통신 API fetch</h1>
+    <h3>멀티스레드 코드(비동기실행) -> 동기화(동기실행)</h3>
+    <h3>fetch 는 호출하면 프라미스를 반환한다 : 프라미스화!</h3>
+    <button onclick="loadEmpListJson()">로드!</button>
+    <p id="empListCont"></p>
+
+<script>
+    function loadEmpListJson(){
+
+        // 😃비동기 통신방법1 : XMLHttpRequest()
+        // const req=new XMLHttpRequest();
+        // req.open("GET", "empListJson.do");
+        // req.onload=function(e){
+        //     let personList=JSON.parse(req.responseText);
+        //     // req.responseText : 불러온, 응답한 문서(url)의 문자열
+        // }
+        // req.send();
+
+        // 😃비동기 통신방법2 : fetch()
+        fetch("empListJson.do", {method:"GET"}) // 서버통신
+        .then((resp)=>{ // resp 응답한 전체 내역! // 동기실행
+            // resp : http 통신에 응답의 정보를 담고 있는 객체
+            // 🍒 fetch 함수에서 에러처리 if/else
+            if(resp.status==200) { // 🍒통신 성공시
+                // console.log(resp); // resp : empListJson.do
+                // return resp.text(); // 문자열 출력
+                return resp.json(); // 오브젝트 // 응답을 문자열 처리 하고 Object로 파싱하는 Promise 반환
+            }else { // 🍒통신 실패시
+                console.log(resp);
+                alert("통신실패" +resp.status);
+            }
+        }).then((empList)=>{ // empList == resp.json();
+            // then((resp)=>{}) 에서 처리한 내역이 넘어온다 empList json문자열
+            // resp.json() 오브젝트로 파싱한 것이 empList 로 담긴것. empList 는 매개변수 이름
+            // console.log(empList);
+            empListCont.innerHTML=empList;
+        })
+    }
+</script>
+    <h2>XMLHttpRequest 의 프라미스화</h2>
+    <h3>
+        <a href="javascript:void(0)" id="loadImgListBtn">
+            프라미스화 한 함수로 ajax/imgList.html 불러오기
+        </a>
+    </h3>
+    <div id="imgCont"></div>
+<script>
+    loadImgListBtn.onclick=function(e) {
+        fetchApi("ajax/imgList.html") // 매개변수에 method 안적으면 기본값 GET 적용
+            .then((responseText)=>{
+                console.log(responseText);
+                imgCont.innerHTML=responseText;
+            }).catch((errorMsg)=>{ // 🍒주소가 잘못됬을때 에러처리
+                // catch 또는 then 의 두번째 콜백함수로 에러처리가능
+                alert("호출실패" + errorMsg);
+                // 👉실제 fetch 함수에는 reject 오류처리가 없다!
+                // 따로 오류처리 해야함 - if/else 문으로
+            })
+        // fetchApi == new Promise((res,rej)=>{});
+        // new Promise 안에서 XMLHttpRequset 통신!
+        // onload 함수 안에서 resolve() 동기화시점!
+        // => .then 에서 resolve() 매개변수를 전달받는다.
+    }
+    function fetchApi(url,method="GET"){
+        return new Promise((resolve, reject)=>{
+            const req=new XMLHttpRequest(); // 0.통신객체생성
+            req.open(method,url); // 1.통신준비
+            req.onload=function(e){ // 4.통신완료시점. 응답내역을 모두 처리
+                if(req.status==200) { // 통신에 성공했을때
+                    let responseText=req.responseText; // 응답받은 url의 문자열
+                    resolve(responseText); // 🍒동기화 시점!! - .then에서 동기실행
+                }else { // 통신에 실패했을때 - 404, 500
+                    reject(new Error(req.status+"오류"));
+                }
+            }
+            req.send(); // 1.5 통신시작
+            // => 컴퓨터마다 인터넷속도 달라. 언제 통신완료될지 모른다.
+            // => 시간을 정해놓는게 아니라 onload 통신완료시점에서 응답내역 처리!
+            // 2. 서버의 응답헤더(상태)를 받았을때 (통신단계)
+            // 3. 서버에서 모든 응답을 완료했을때 (통신단계)
+        })
+    }
+
+
+
+</script>
+
+
+
+
+</body>
+</html>

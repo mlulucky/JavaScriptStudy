@@ -208,7 +208,7 @@
     통신이란 - 문자열로 전달하는것.
     -> 010101010
     http 통신 : html 문서를 010101로 바꾸는것
-    (html 통신 을 transfer protocol - 대표가 html 전달(, 이미지, 동영상, xml, 문자열 전달할 수있다). 대)
+    (html 통신 을 transfer protocol - 대표가 html(이미지, 동영상, xml, 문자열 전달할 수있다).
     객체 내용을 전달하고 싶은것
     대표 - xml
     내용을 전달할때 xml을 썼다.
@@ -219,6 +219,7 @@
     통신은 다양하다, http 통신만 얘기하는건 아니다.
 
     JSON 은 문자열 로 받는다.
+
     문자열을 객체로 만들어줄 도구가 필요
     js JSON 라이브러리
     java JackSon 라이브러리
@@ -280,16 +281,19 @@
     console.log(sum.prototype); // sum의 프로토타입이 나온다.
     console.log(sum(10.33,2.55)); // 실수 연산시 값이 정확하지 않다.
 
+
   // ■ Person과 똑같은 객체를 타입 명시 없이 만들어 보기
 
   // Object person = new Object(); // 자바
   const person = new Object(); // 자료형을 참조할 때는 상수로 작성한다.(타입이 명확하지 않아서) // 변수의 타입 명시 없다.
   person.name = "최경민"; // 객체에 필드를 정의하는 방법
   person.age = 38;
+  person.country = "korea";
   console.log(person) // {name: '최경민', age: 38}
   // {name: '최경민', age: 38} : 자바스크립트의 오브젝트 명세서  JavaScript Object Notation (JSON)
   // JSON : Object 를 설명하기 위한 표기법 (리터럴하게 오브젝트를 명시한다.)
 
+  // JSON
   const person2 = {name : '문은정', age : 20, name : "경민"}; // 훨씬 훨씬 간단하다!!
   // {} == new Object
   // name : "문은정" == person2.name = "문은정"

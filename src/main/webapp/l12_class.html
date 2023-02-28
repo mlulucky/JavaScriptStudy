@@ -99,7 +99,7 @@
 
     // 1. Person 타입으로 만든 객체
     const p0 = new Person("석정",25,"dba","여자");  // Person 으로 생성한 객체
-    const p1 = new Person("경민",38,"강사");  // Person 으로 생성한 객체
+    const p1 = new Person("경민",38,"강사");  // Person 으로 생성한 객체, gender 안적으면 기본값 남자로 출력
     console.log(p0);
     console.log(p1);
     // 2. Object에 필드를 정의해서 만드는 객체
@@ -113,9 +113,9 @@
     class Person2 { // function 과 같은데 문법(class)만 존재 // 생성자를 갖는다.
       // js : this. 을 하면 자동으로 필드를 생성
       // java : 필드를 전역에 명시해야 한다.
-      // name;age;job;gender; // 생략가능 // js에서 필드는 this, let, var, const 를 사용하지 않는다. // 명시 안해도 된다. 생성자에서 넣으면 됨.
+      // name;age;job;gender; // 생략가능 // ◆ js에서 필드는 this, let, var, const 를 사용하지 않는다. // 명시 안해도 된다. 생성자에서 넣으면 됨.
 
-      constructor(name,age,job,gender="여자") {
+      constructor(name,age,job,gender="여자") { // ◆ 오버로딩이 안되서 대신 매개변수에 기본값을 줄수있다. 기본값은 생략이 가능하므로 앞에서 작성x, 뒤에서 작성
         // this 는 해당 타입이 객체가 되었을 때 필드 접근자. // this 는 생성자 안에서 사용. 메서드 오버로딩이 안되서 매개변수 기본값(gender="")을 준다 // 기본값 매개변수는 뒤에서부터 주기. 앞쪽에서 주면 생략할 수 없다.
         this.name=name; // new Person2() 객체가 되면 name 이라는 필드를 만들어
         this.age=age;   // new Person2() 객체가 되면 age 이라는 필드를 만들어
@@ -123,10 +123,10 @@
         this.gender=gender;
       }
 
-      // **클래스안에서 함수는 필드로 사용 // 함수이름=function()
+      // **클래스안에서 함수는 필드로 사용 (필드 함수)// 함수이름=function()
       hello0=function(){};
       hello1=()=>{};
-      hello2(){}; // 필드로 하는 함수 - 권장하는 모습 // 앞에 function 생략 가능 // == hello2=function(){}
+      hello2(){}; // 권장하는 모습 // 앞에 function 생략 가능 // == hello2=function(){}
     } // GC(가비지컬렉터)가 존재하는 프로그래밍 언어는 객체를 따로 삭제하면 안된다! (java, js)
 
 
@@ -179,20 +179,21 @@
 
     // js 함수의 상속 : extends 가 없다.
     function E(){
-        this.a="E.a";
+        this.a="E.a"; // this 는 객체 생성시에 존재
     }
     function F(){
         this.b="F.b";
         this.__proto__=new E(); // 프로토 타입의 상속
         // this.__proto__=E.prototype; // 안됨.. 프로토타입으로 상속받는 방법이 있을까 ?
-
+        // 함수 안에 this 는 함수가 객체로 생서시, 생성되는 필드. 객체 자기자신을 가리킨다
+        // new F() == this
     }
-    const f=new F();
+    const f=new F(); // 객체생성 {b: "F.b", prototype}
     console.log("상속예시")
     console.log(f); // 콘솔에서 봤을땐 a가 없는 것처럼 보이지만 a를 호출할 수 있다. 왜? 내 부모가 가진 필드로 들어가 있어서
-    console.log(f.a);
-    console.log(E.prototype);
-    console.log(f.__proto__);
+    console.log(f.a); // new F() 안의 프로토타입 new E()의 필드 a // "E.a"
+    console.log(E.prototype); // function E() 함수의 프로토타입 -> 객체가 만들어지기 전이므로 this.a 는 없다
+    console.log(f.__proto__); // E {a: 'E.a'}
 
     function G(){
         this.c="G.c";

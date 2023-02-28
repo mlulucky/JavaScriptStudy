@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>비동기식 통신 ajax</title>
+</head>
+<body>
+    <h1>Asynchronous JavaScript And XML</h1> <!-- Asynchronous : 비동기 -->
+    <p>자바스크립트로 xml 을 비동기식 통신으로 불러오는 것</p>
+    <ul>
+        <li>http 통신에서 동기식 통신이란? : 브라우저가 url 로 요청한 그 페이지 1개를 로드하는 것(일반적)</li>
+        <li>http 통신에서 비동기식 통신이란? : 브라우저가 로드한 페이지에서 다른 페이지를 요청하는 것(AJAX)</li>
+        <li>xml : 비동기식 통신에서 xml 은 html 을 의미한다.</li>
+        <li>자바스크립트로 비동기식 통신 : js의 XMLHttpRequest 객체가 비동기식 통신(AJAX)를 하도록 지원한다.</li>
+        <li>AJAX(Asynchronous JavaScript And XML) : 자바스크립트로 비동기식 통신을 하면 AJAX 라고 부른다.</li>
+    </ul>
+    <h2>AJAX 의 등장이유?</h2>
+    <ul>
+        <li>한개의 url 이 문서를 1번로드 하는 브라우저의 인터페이스가 불편해서 등장(==서버사이드 렌더링)</li> <!-- 동기식 // 페이지 로드시 url전환, 페이지 전환 -->
+        <li>작은 데이터를 얻기위해 전체 페이지를 로드하는 것이 비효율적(비용)이라서</li> <!-- 동기식 <-> 비동기식 : html 파일 전체가 아니라, json 포맷으로 필요한 데이터만 받는다 -->
+        <li>문서를 요청할 떄마다 중복되는 리소스를 매번 다운로드 받는다(비용증가)</li> <!-- 동기식 -->
+        <li>유저 인터페이스를 편하게 하고(화면전환 X) 비용을 절감한다.</li> <!-- 비동기식 통신(AJAX) : 화면 새로고침 없이 다른 페이지를 불러 오는 것 -->
+    </ul>
+    <p>
+        <button id="loadDomBtn">ajax/imgList.html 문서 불러오기</button>
+    </p>
+    <div id="ajaxContainer" style="border:1px solid"></div> <!-- 페이지가 불러와질 태그 -->
+    <script>
+        const loadDomBtn = document.getElementById("loadDomBtn");
+        const ajaxContainer = document.getElementById("ajaxContainer");
+        loadDomBtn.onclick=function(e){
+            // 📢 AJAX(비동기 통신)으로 페이지 불러오기.
+            const req=new XMLHttpRequest(); // 📍통신 객체 생성 // AJAX 비동기식 통신지원
+            let url = "ajax/imgList.html"; // 📍불러오고 싶은 문서(url)
+            req.open("GET", url); // 📍준비단계 // 통신방식 (GET: url , POST : form(양식))
+            req.onload=function(e){ // 📍onload : 통신이 성공한 시점 // 통신이 성공했을때 실행되는 콜백함수
+                ajaxContainer.innerHTML=req.responseText; // 불러온 문서(url)을 html 에 출력
+            }
+            req.send(); // 📍해당 url(문서)를 불러온다.
+            // setTimeout(()=>{ // 문서를 불러오는데 시간이 걸리고 언제 받아오는지 알 방법이 없고 컴퓨터마다 다르다
+            //     console.log(req.responseText); // 불러온 문서(url)문자열
+            // },10);
+        }
+    </script>
+    <form name="signupForm"> <!-- 폼태그 엔터쳤을때 새로고침 방지 : onsubmit="return false;> -->
+        <div>
+            <p>
+                <label>
+                    id : <input name="userId" placeholder="id를 입력하세요"/>
+                </label>
+            </p>
+            <p id="userIdMsg"></p>
+        </div>
+    </form>
+    <script>
+        <!-- 📢AJAX 로 아이디 체크-->
+        const signupForm = document.forms["signupForm"]; // 폼태그 선택 // forms["폼태그이름"]
+        const userIdMsg = document.getElementById("userIdMsg");
+        // input 태그 아이디 입력 후 엔터쳤을때 실행되는 이벤트 : onchange 할때, 서버통신 -> 중복체크확인
+        signupForm.userId.onchange=function(e){
+            const req=new XMLHttpRequest(); // js 통신 객체 생성 // AJAX 비동기 통신 지원
+            let url = "ajax/idCheck.json"; // 불러오고 싶은 문서(url)
+            req.open("GET", url); // 통신준비(통신 방식, url)
+            req.onload=function(e){ // 통신 성공시, 콜백함수 재정의
+                // console.log(req.responseText);
+                const jsonStr=req.responseText; // 불러온, 응답한 문서(url)의 문자열 // JSON
+                const jsonObj=JSON.parse(req.responseText); // JSON 문자열 -> 오브젝트 형변환
+                console.log("jsonStr",jsonStr); // {"check" : "false"}
+                console.log("jsonObj",jsonObj); // {"check" : false}
+                let idChk = (jsonObj.check) ? "멋진 아이디 입니다." : "사용중인 아이디 입니다."; // 결과를 변수에 담기!
+                console.log(jsonObj.check); // false // jsoObj 의 필드.속성.key => check 의 값
+                console.log(idChk); // 사용중인
+                userIdMsg.innerText=idChk;
+            }
+            req.send(); // url(리소스, 문서) request 요청 // 해당 문서(url)을 불러온다.
+        }
+    </script>
+    <h2>📍PersonList.json 파일(url,페이지)를 AJAX 로 불러와서 table 로 출력해보자~
+        <button id="personListLoadBtn">로드!</button>
+    </h2>
+    <table>
+        <thead>
+        <tr>
+            <th>이름</th>
+            <th>태어난해</th>
+            <th>직업</th>
+            <th>결혼</th>
+        </tr>
+        </thead>
+        <tbody id="personTbody"></tbody>
+    </table>
+    <script>
+        // 📢버튼을 눌러서 페이지를 table 로 출력하기 - AJAX 비동기 통신으로
+        const pListLoadBtn = document.getElementById("personListLoadBtn");
+        const personTbody = document.getElementById("personTbody");
+        pListLoadBtn.onclick=function(e){
+            const req=new XMLHttpRequest();// 통신객체 생성. 비동기 통신 AJAX 지원
+            let url = "ajax/personList.json"; // 불러올 문서(url)
+            req.open("GET", url); // 통신 셋팅(통신방식, url)
+            req.onload=function(e){
+                const reqString=req.responseText; // 불러온 문서(url)의 문자열
+                const personList=JSON.parse(reqString);// JSON 문자열 -> 오브젝트로 형변환
+                console.log(personList); // [{},{},{}] // {name:'경민', birth:1986, job:'강사',married:true};
+
+                // 테이블로 출력하기
+                let html="";
+                personList.forEach((person)=>{ // person 하나가 tr // person는 personList 배열의 요소
+                    html+="<tr>";
+                    for(let key in person) { // person[key] 가 td // person 배열에서 참조키 key 전부를 하나씩 뽑아서 변수 key 에 담는다
+                        // person 의 참조키
+                        // "name", "birth", "job", "married"
+                        // console.log(key, p[key]); // p[key] == value // console.log(key); == 'name', 'birth', 'job', 'married'
+                        html+=`<td>${person[key]}</td>` // person[name] == "경민"
+                    }
+                    // console.log(p);
+                    html+="</tr>"
+                });
+                personTbody.innerHTML=html;
+            }
+            req.send(); // 불러올 문서를 서버에 요청
+        };
+    </script>
+    <h2>동적페이지(서블릿)을 JSON 으로 반환하고 AJAX 로 통신해보자</h2>
+    <p><a href="empListJson2.do">동기식으로 페이지 불러오기</a></p>
+    <p><a class="loadEmpBtn" href="javascript:void(0)" data-url="empListJson2.do">비동기식으로 모든 사원 불러오기</a></p>
+    <p><a class="loadEmpBtn" href="javascript:void(0)" data-url="empListJson2.do?deptno=10">비동기식으로 10번 부서 사원 불러오기</a></p>
+    <p><a class="loadEmpBtn" href="javascript:void(0)" data-url="empListJson2.do?deptno=20">비동기식으로 20번 부서 사원 불러오기</a></p>
+    <p><a class="loadEmpBtn" href="javascript:void(0)" data-url="empListJson2.do?deptno=30">비동기식으로 30번 부서 사원 불러오기</a></p>
+
+    <!-- a태그 : anchor 닻. 배타고 여행하는거-->
+    <!-- data-* : 유저가 정의하는 속성. 속성으로 숨겨놓는거 // 비동기식으로 불러오는 경우 a태그 void로 막아야 한다(페이지 이동막기)-->
+    <h3>사원 리스트</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>사번</th>
+            <th>이름</th>
+            <th>직책</th>
+            <th>급여</th>
+            <th>부서</th>
+        </tr>
+        </thead>
+        <tbody id="empTbody"></tbody>
+    </table>
+    <script>
+        const loadEmpBtns = document.querySelectorAll(".loadEmpBtn"); // nodeList
+        const empTbody = document.getElementById("empTbody");
+        loadEmpBtns.forEach((btn)=>{ // btn : <a class="lobaEmpBtn"></a>
+            btn.onclick=loadEmp;
+        })
+        function loadEmp(){
+            let url=this.dataset.url; // 불러오고 싶은 url // this 는 함수를 실행한 객체 -> loadEmpBtn
+            const req=new XMLHttpRequest();// js 통신객체 // AJAX 통신
+            req.open("GET",url);// 통신방식 셋팅
+            req.onload=function(e){ // 통신 성공한 시점
+                let empListJson=req.responseText; // 요청한 문서를 문자열로 응답받음
+                const empList=JSON.parse(empListJson); // JSON 문자열을 오브젝트로 형변환 => 참조 키와 값을 사용할 수 있다.
+                console.log(empList);
+                printEmpList(empList);
+                // console.log(printEmpList(empList));
+                // return 값이 없는 함수는 출력시 undefined // html 출력 확인
+            }
+            req.send();// 통신요청
+        }
+
+        // 📍테이블 출력 함수
+         function printEmpList(empList) {
+             let html="";
+            empList.forEach((emp)=>{
+               html+="<tr>";
+               for(let key in emp) {
+                   html+=`<td>${emp[key]}</td>`;
+               }
+               html+="</tr>";
+            });
+            empTbody.innerHTML=html;
+            // return html;
+         }
+
+    </script>
+</body>
+</html>

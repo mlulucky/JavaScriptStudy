@@ -61,17 +61,18 @@
     arr.push("안녕"); // java add()
     arr.push("경민이야!");
     arr.push(38);
-    console.log(arr); // arr.toString() // toString() 생략
+    console.log(arr); // ['안녕', '경민이야!', 38] // arr.toString() // toString() 생략
     const liArr = arr.map(function (v){ // v 는 arr new Array() 의 값. value - "안녕", "경민이야!" , 38
       // map(함수) 반복문(내부) : 매개변수로 오는 함수를 반복실행 (== StreamAPI.map() // map 은 요소를 바꿔준다 / 새로운 배열을 반환한다.)
       // 매개변수 함수의 value. 요소들에 대해서 실행문 반복적용
+      // => value 가 3개면 value 마다 반복
       // return "<li>" + v + "</li>";  // 문자열 li
       let li=document.createElement("li"); // 노드개체 li (document 객체)
-      li.innerText=v;
+      li.innerText=v; // v 는 ""
       return li;
     });
 
-    console.log(liArr);
+    console.log(liArr); // [li, li, li] // li 태그 안에 <li>"안녕"</li>
 
     const o={}; // new Object();
     const arr2=[]; // new Array();와 완전 동일한 객체를 생성 // 결과가 같다

@@ -6,31 +6,36 @@
 </head>
 <body>
   <h1>무한 반복문 setTimeout 과 setInterval 을 알아보자!</h1>
-  <h2>setInterval(callBackFunc,milliseconds) :  => return threadNum(새로생성된 일꾼번호) 을 반환
-    밀리초마다 콜백함수를 호출하는 무한 반복문(멀티스레드)
+  <h2>setInterval(callBackFunc,milliseconds) :  => return threadNum(스레드 번호, 새로생성된 일꾼번호) 을 반환
+      해당 밀리초마다 콜백함수를 호출하는 무한 반복문(멀티스레드)
   </h2>
-
   <h3>setInterval 로 시계 만들기</h3>
   <p id="calendar"></p>
   <p id="clock"></p>
-  <h2>clearInterval(threadNum) : setInterval 로 생성된 스레드를 삭제하는 함수(일하는 걸 없애는 것)
+  <h2>clearInterval(threadNum) : setInterval 로 생성된 스레드를 삭제하는 함수(일하는 걸 없애는 것(멈춘다))
       <button id="clearClock">clock 일꾼(thread) 삭제</button>
+      <!-- threadNum == setInterval(()=>{},밀리초) // setInterval이 일꾼번호(threadNum)를 반환하기 때문에-->
   </h2>
 
-  <h2>setTimeout(eventHandler,milliSec) return threadNum :
-      해당 밀리초 동안 대기하고 있다가 이후에 콜백함수를 실행하는 무한 반복문(멀티스레드). 끝이 있다. (<-> setInterval 은 끝이 없다)
+  <h2>setTimeout(eventHandler,milliSec) return threadNum : // 몇초 뒤에 실행하라 // eventHandler == callBack함수(포괄적)
+      해당 밀리초 후에(대기하고 있다가) 이후에 콜백함수를 실행하는 무한 반복문(멀티스레드). **끝이 있다. (<-> setInterval 은 끝이 없다)
   </h2> <!-- eventHandler == callbackFunction (호출되는 함수가 모두 콜백함수(포괄), 리스너가 콜백함수를 실행하는 것! , 내가 실행하는것이 아니다. 어떤이벤트가 어디서 발생하는지 알기위해 매개변수로 e (이벤트정보)를 넣는다. e 는 리스너에 이벤트 발생정보를 전달한다. ) 이벤트 정보를 넘기면서 실행 // 함수가 실행할때 처리할 정보를 매개변수로 주는 것 // 콜백함수는 내가 실행하는 것이 아니고 이벤트가 발생했을때, 이벤트리스너가 실행하는 것. 반복문도 내가 실행하는게 아니라 iterator 반복문으로 자동으로 함수를 실행 - 콜백함수 -->
   <h3>3초 뒤에 알림창 띄우기!
-      <button onclick="window.alertNum=setTimeout(()=>{
+      <!--use Strict : 표준화된 문법 // var 을 사용하지 못하고 this가 window 로 인지하지 않는 문법(es6 문법만 사용)-->
+      <button onclick="window.alertNum=setTimeout(()=>{  // 멀티스레드 - 대기하고 있는 스레드가 여러개 생성된다. // var alertNum=setTimeout(()->{}) var가 안먹힌다. 화살표함수(최신문법) 안에서 사용못한다
           alert('안녕! 일꾼번호 : ' +alertNum);
-      }, 3000)">알림!</button>
-<!--   3초후에 콜백함수 실행 // onclick="setTimeout(()=>{}, 시간)"-->
-<!--use Strict : 표준화된 문법-->
-
+      }, 3000)">알림!</button> <!--   3초후에 콜백함수 실행 // onclick="setTimeout(()=>{}, 시간)"-->
   </h3>
   <h2>clearTimeout(threadNum) : setTimeout 의 스레드를 삭제하는 함수
     <button onclick="clearTimeout(window.alertNum)">알람 멈추기</button>
   </h2>
+
+<!-- 내가 생각한거
+    setInterval vs setTimeout
+    setInterval : 밀리초 마다 콜백함수 실행 무한반복문 ex) 시계. 타이머 (자동으로 무한반복)
+    setTimeout  : 밀리초 후에(대기하고있다가) 콜백함수 실행 무한반복문 ex) 몇 초뒤에 알림창 띄우기
+-->
+
 
 <script>
     const date=new Date();
@@ -43,53 +48,49 @@
     calendar.innerText=dateStr;
     const clockNode=document.getElementById("clock"); // 함수이름과 태그의 id 이름이 같은경우에는 id만 쓸수 없어 => getElementById 로 태그 id 지정
 
-    // setInterval == 비동기코드(멀티스레드) - setInterval 반복문 뒤에 console.log 실행된다! - 비동기 / 멀티스레드
-    let intervalNum = setInterval(()=> { //intervalNum 은 일꾼번호 // main메서드가 0. 일꾼번호는 0번부터 시작. 새로생성되면 1
+    /*while(true) { // 자바코드  => 초가 1초에 한번씩 계속 바뀔려면 반복문 안에 넣어야 한다. => while문
+        clockNode.innerText=clock(); // id clock 태그 안에 clock() 시간함수 호출
+        Thread.sleep(1000); // => 무한반복문일때, 시계가 무한으로 실행되므로 브라우저가 멈춘다 (해결 -> 자바 sleep 메서드)
+        // => js 해결 : setInterval( , )을 이용한다. (js 에는 자바 sleep 메서드가 없다)
+    }*/
+
+    // setInterval(clock,1000); // clock 함수를 1초마다 실행! 하지만 clock 함수에 출력코드를 안써놨다
+    // => 화살표 함수 ()=>{} 구현문 안에 clock 함수를 출력하는 구문을 넣는다! setInterval(()=>{ 실행문 },1000);
+
+    // setInterval == 비동기코드(멀티스레드) 자바의 new Thread().start() 와 같다
+    // 무한히 반복 + 멀티스레드 => setInterval 반복문 뒤에 console.log 실행된다! - 어떻게? setInterval은 비동기 / 멀티스레드 이기 때문에
+    // 일꾼번호 출력
+    let intervalNum = setInterval(()=> { //intervalNum 은 일꾼번호 // setInterval은 일꾼번호를 반환한다. // main메서드가 0. 일꾼번호는 0번부터 시작. 새로생성되면 1
         clockNode.innerText=clock() + "일꾼번호: " + intervalNum; // clock() == `${h}시 ${m}분 ${s}초` // clockNode.innerText = clock();
     }, 1000);
     console.log("다른 일 출력되면 setInterval 을 비동기 코드로 멈티스레드를 생성했다. ")
 
 
-    // 시계 만들기 => 함수만들기 (함수를 매번 호출해야함 정적시간 -> 동적시간)
+    // 시계 만들기 => 함수만들기 (시간을 매번 호출해야함 정적시간 -> 동적시간)
     function clock() {
-        const date=new Date(); // 생성한 시점에서 시간 // 전역에 선언한 new Date()를 사용하면 전역에서 생성했던 시간이 적용된다. => 매번 시간을 구하는 함수안에 따로 선언해야함
+        const date=new Date(); // 생성한 시점에서 시간 // 전역에 선언한 new Date()를 사용하면 전역에서 생성했던 시간이 적용된다. => *** 매번 시간을 구하는 함수안에 따로 선언해야함
         let h=date.getUTCHours(); // UTC - 현재 위치 기반 시각 ex) 한국이면 한국시간
         let m=date.getUTCMinutes();
         let s=date.getUTCSeconds();
         let clockStr=`${h}시 ${m}분 ${s}초`; // 출력문
-        return clockStr;
+        return clockStr; // return `${h}시 ${m}분 ${s}초`;
     }
 
     // setInterval true false 가 아니라 무한반복으로 실행하는거 => setInterval 일꾼을 삭제하기
     clearClock.addEventListener("click", (e)=> { // 콜백함수
-        clearInterval(intervalNum); // 일꾼(thread) 삭제 (java 는 반복문을 멈추는 것(true,false 이용해서)을 권장. 쓰레드 삭제하는건 권장하지 않음) // setInterval은 true false 가 없다. 그래서 삭제해버림.
+        clearInterval(intervalNum); // 일꾼(thread) 삭제 - 일하던걸 멈추는 것 (java 는 반복문을 멈추는 것(true,false 이용해서)을 권장. 쓰레드 삭제하는건 권장하지 않음) // setInterval은 true false 가 없다. 그래서 삭제해버림.
     })
-
-
-
-
-
 
     // console.log(new Date()); // new Date() : 현재 시간을 출력
     // console.log(Date.now()); // 1970년 부터 ~ 시간을 밀리초 출력
 
-    // ■ 시계 만들기 (id clock 태그 안에 clock() 시간함수 호출)
-    // => 초가 1초에 한번씩 계속 바뀔려면 반복문 안에 넣어야 한다. => while문
-    /*
-        while(true) {  => setInterval 이용
-            clockNode.innerText=clock();
-            // Thread.sleep(1000); // 자바의 sleep() // js 에는 sleep 이란게 없다.
-        } // 자바코드
-     */
-    // => 무한반복문일때, 시계가 무한으로 실행되므로 브라우저가 멈춘다 (해결 -> 자바 sleep 메서드)
-    // => 해결 : setInterval( , )을 이용한다. (js 에는 자바 sleep 메서드가 없다)
-    // setInterval(clock(),1000);// 특정함수를 몇초마다 실행하라 - Thread의 sleep 과 동일한 기능 // 자바의 MultiThread 와 동일한 기능
+    // => js 해결 : setInterval( , )을 이용한다. (js 에는 자바 sleep 메서드가 없다)
+    // setInterval(clock(),1000);// 특정함수를 몇초마다 실행하라 - ,1000 => Thread의 sleep 과 동일한 기능 // JS setInterval == Java의 MultiThread 와 동일한 기능 _ 새로운 일꾼생성
 
     "use strict"; // var을 사용하지 못하고 this 가 window 로 인지하지 않는 문법 (ex6 문법만 사용)
     // var 왜 호이스팅이 일어나고 window 가 왜 전역의 this 인지 배운사람은 잘 아는데..
     // 처음 js 접하는 사람은 이것을 오류로 취급을 해서 "use strict" 으로 쓰면 var을 지우고 window를 가리키지 않는다. (신문법에서는 var가)
-    // 화살표함수 같은 es5 문법(신 문법)을 쓰면 자동으로 "use strict"이 붙는다!!! - use strict 예) 변수의 타입은 생략할 수 없다. 변수삭제 불가. 변수이름 동일하면 안됨. 옛날에 이상한 문법은 다 못하게 막아놓음
-
+    // 화살표함수 같은 es5 문법(신 문법)을 쓰면 자동으로 (눈에 보이진 않지만) "use strict"이 붙는다!!! - use strict 예) 변수의 타입은 생략할 수 없다. 변수삭제 불가. 변수이름 동일하면 안됨. 옛날에 이상한 문법은 다 못하게 막아놓음
 
 </script>
 

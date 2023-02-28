@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>async 함수</title>
+</head>
+<body>
+  <h1>async 함수와 프라미스와 동기화!</h1>
+  <h2>async 함수는 자동 프라미스화 기능이 존재한다.</h2>
+  <pre>
+    async function name(){
+      return data; // 프라미스 객체
+
+      == return new Promise((resolve)=>{
+          resolve(data);
+      })
+
+    }
+  </pre>
+  <h2>async 함수는 await 연산으로 Promise 객체의 then() 함수를 실행할 수 있고(async 함수에만 await 식이 포함될수 x => 추구 가능하게끔 변경예정) // 여러 프라미스의 동작을 동기스럽게 // 비동기의 장점은 여러개의 일을 동시에 할수있다 프라미스는 동기코드로 된다.
+      그리고 then 의 첫번째 콜백함수의 매개변수를 반환한다.
+  </h2>
+  <p>콜백지옥을 벗어나기 위해 Promise(2015) 가 도입되었지만 프라미스 지옥을 안겨주었다.. async 함수(2017)가 등장!!</p>
+  <pre>
+      new Promise((resolve)=>{}).then()
+      new Promise((resolve)=>{
+            .....처리
+            resolve(결과);
+      }).then((결과)=>{ // Promise 코드 와에 then 코드 간에 비동기 코드
+            ......처리 // 결과 가지고 온것으로 뭔가 처리하는 것.
+      })
+
+      async function name(){
+         let 결과  = await new Promise((resolve)=>{
+            ....처리
+            resolve(결과); // 결과가 await 의 결과로 넘어가서 다시 아래부분에서 처리된다.
+         })
+         ... 처리 // let 결과 처리
+      }
+  </pre>
+  <h2>async 에서 에러처리(너무너무 쉽다)</h2>
+  <pre>
+      (then이 많이 있을때)
+      new Promise((resolve,reject)=>{
+            .... 오류 or 예상하지 않은 상황 => new Error 생성
+            reject(new Error("오류내역"));
+      }).then((resolve)=>{
+            },("오류내역")=>{
+                처리
+      });
+
+      // 권장 (then이 많이 없을 떄)
+      new Promise((resolve,reject)=>{
+            .... 오류 or 예상하지 않은 상황 => new Error 생성
+            reject(new Error("오류내역"));
+      }).then((resolve)=>{
+      }).catch(("오류내역")=>{
+            오류처리  // catch 로 오류처리
+      });
+
+      // async 함수 Promise 처럼 reject 나 catch 를 사용하지 않고 일반적인 예외처리를 하면된다.
+      async 함수(){
+            try{
+                let 처리 =  await new Promise((resolve)=>{resolve(처리)})
+            catch(e) {
+                오류 처리
+            }
+      }
+      // 통신 실패인 404, 500 이것은 예외처리 되는 오류가 아니다. (통신은 한번 갔다 온거기 때문에 통신오류가 아니다)
+      // 통신은 한건데. 그 상태가 404, 500 인것.
+  </pre>
+  <h2>멀티 스레드(비동기 실행)를 사용하는 이유와 스레드 동기화와 Promise.all([])</h2>
+  <ul>
+      <li>멀티 스레드를 사용하는 이유1 : 여러 일을 동시에 하기 위해</li>
+      <li>멀티 스레드를 사용하는 이유2 : 속도가 빨라서 시간 절약과 비용감소가 발생</li>
+      <li>멀티 스레드를 사용하는 이유3 : 프로세스 일을 더 효율적으로 사용하기 위해</li> <!-- 스레드(app 이 일하는 단위) / 프로세스(cpu 이 일하는 단위)   프로세스가 멀티스레드에게 일하는 단위를 준다. // 프로세스 : cpu 일하는 속도가 미쳤다. 멀티코어 - cup 2개. 스케줄링을 잘한다. cpu는 슈퍼맨.. 한번에 하나 일만 하지만 마치 동시에 일을 하는 것처럼 스케줄링을 짜준다. 어플마다 스택 1개.  -->
+      <li>Promise 와 async 사용할때 하는 실수로 효율적으로 실행하기 위해 생성하는 멀티스레드를 모두 동기화 하는 것</li>
+      <li>Promise.all() 을 이용해서 비동기 코드 실행을 동시에 동기화 할 수 있다.</li> <!-- 예) 10개의 작업이 끝나면 어떤 작업을 할 수 있다. -->
+  </ul>
+  <pre>
+      async function name(){
+            let 결과1=await 프라미스화함수();
+            let 결과2=await 프라미스화함수();
+            let 결과3=await 프라미스화함수();
+            let 결과4=await 프라미스화함수();
+            .... 모든 실행이 동기화 되서 멀티스레드를 정의한 이유가 없어진다.
+
+      }
+
+      async function name2(){
+            let [결과1,결과2,...]=await Promise.all([프라미스화함수(),프라미스화함수(),...]) // 결과가 배열로 넘어온다.
+            .....Promise.all 에 정의된 스레드가 모두 종료되는(마지막 스레드가 끝나는) 시점과 동기화
+      }
+
+
+  </pre>
+
+  <script>
+    async function a(){ // async 함수 : 실행하면 프라미스 객체를 반환한다 // 자동으로 프라미스 화 된다.
+      return "1";  // 프라미스 객체를 반환
+    }
+    // console.log(a());
+    console.log(a().then((msg)=>{
+      console.log(msg); // 1
+    })); //Promise {<fulfilled>: undefined}
+
+    function a2(){
+      return new Promise((resolve)=> {resolve("1")}); // == async function a(){}
+    }
+    console.log(a2());
+
+
+    function loadImgList(){
+      fetch("ajax/imgList.html") // 바로 통신을 해버린다.
+              .then((resp)=>{ // 첫번째 콜백함수 then(()=>{}) 가 실행이 실행되고 두번째 콜백함수 then(()=>{})를 실행한다.
+                return resp.text(); // fetch 는 받아온것을 반드시 문자열로 반환해야한다. -> text() 또는 json()
+              }).then((html)=>{ // 두번째 콜백함수
+                alert(html); // write 를 하면 모든 코드가 다 사라져 버린다.
+              });
+    }
+
+    async function loadImgListAsync(){
+        console.time("imgListTime:")
+        const resp=await fetch("ajax/imgList.html") // then 이 실행된다. // await 연산이 then 을 실행, 첫번째 콜백함수의 매개변수를 반환
+        // const resp=await fetch("ajax/imgList22.html") // 없는 파일 -> 에러발생
+        // 404가 발생하면 js 엔진이 종료되나요 ?? (예외처리 대상이 아니다.) => 아래 코드가 쭉 실행된다
+        if(resp.status==200) { // 예외처리 - 통신성공 200
+            const html=await resp.text(); // 두개의 비동기 코드가 동기가 된다.
+            // => 통신이 끝나는 시점에 그 데이터를 텍스트를 변환 이런 코드는 동기화 하기
+            alert(html);
+        } else{
+            alert("통신실패!");
+        }
+        console.timeEnd("imgListTime:") // fetch 하는데 걸리는 시간 나온다. timeEnd 는 v8 엔진에서 제공하는 함수. time(), timeEnd()
+    }
+    loadImgListAsync();
+
+    /* async function ab(){
+         loadImgListAsync = async()=> {
+             const resp=await fetch("ajax/imgList.html"); // then 이 실행된다. // await 연산이 then 을 실행, 첫번째 콜백함수의 매개변수를 반환
+             const html=await resp.text(); // 두개의 비동기 코드가 동기가 된다.
+             // => 통신이 끝나는 시점에 그 데이터를 텍스트를 변환 이런 코드는 동기화 하기
+
+             console.log(resp);
+             alert(html);
+         }
+     }*/
+  </script>
+    <h2>imgList 와 PersonList 를 불러오세요!
+        <button id="loadImgAndPersonBtn">로드!</button>
+    </h2>
+    <p>
+        <button id="loadImgAndPersonBtn2">Promise ALl 로드!</button>
+    </p>
+    <div id="imgListCont"></div>
+    <pre id="personListCont"></pre>
+  <script>
+      loadImgAndPersonBtn.onclick=async()=>{
+          console.time("await img await person") // ?
+          const resp=await fetch("./empListJson.do");
+          // await 때문에 imgList 가 통신이 완료될때 까지 기다렸다가 personList 와 통신
+          const resp2=await fetch("./ajax/personList.json");
+
+          let html=await resp.text(); // promise 객체
+          let json=await resp2.text();
+          imgListCont.innerHTML=html;
+          personListCont.innerText=json;
+          // 커다란 실수를 저질렀다! 두둥!!
+          console.timeEnd("await img await person")
+      }
+
+      // 📢통신을 한번에 하기 await 안하고 Promise.all
+      loadImgAndPersonBtn2.onclick=async()=>{
+          console.time("Promise.all([img,person])")
+          const[resp,resp2]=await Promise.all([fetch("./empListJson.do"),
+                                         fetch("./ajax/personList.json")]);
+          // 결과물 fetch1 이 resp 에 나오고, fetch2 가 resp2 에 나온다.
+          let html=await resp.text(); // promise 객체
+          let json=await resp2.text();
+          imgListCont.innerHTML=html;
+          personListCont.innerText=json;
+          // 커다란 실수를 저질렀다! 두둥!!
+          console.timeEnd("Promise.all([img,person])")
+      }
+  </script>
+
+
+</body>
+</html>

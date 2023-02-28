@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>fetch API 와 AJAX</title>
+</head>
+<body>
+  <h1>Promise 화 된 비동기 통신 API fetch</h1>
+  <h2>
+    empListJson.do 와 비동기식 통신
+    <button onclick="loadEmpListJson()">로드!</button> <!-- 버튼안에 onclick 쓸때는 함수실행 ();해야한다. function(){} 이 숨어있는거라서 -->
+  </h2>
+  <pre id="empListCont"></pre>
+<script>
+  function loadEmpListJson(){ // 클릭하면 서버통신 실행하도록.
+    // fetch 는 호출하면 프라미스를 반환한다 : 프라미스화! // 새로운 정보를 받아온다 (네트워크요청) -> 새로 고침 없이 가능! AJAX 비동기 통신 // AJAX 는 춘추전국시대에 익스플로러가 만든것. 현재는 다른곳에서 만든 AJAX 를 사용
+    // fetch("empListJson.do?deptno=10", {method:"GET"}) // deptno=10 인 url 만 통신
+
+      // 😃비동기 통신방법1 : XMLHttpRequest()
+      // const req=new XMLHttpRequest();
+      // req.open("GET", "empListJson.do");
+      // req.onload=function(e){
+      //     let personList=JSON.parse(req.responseText);
+      //     // req.responseText : 불러온, 응답한 문서(url)의 문자열
+      // }
+      // req.send();
+
+      // 😃비동기 통신방법2 : fetch()
+      fetch("empListJson.do", {method:"GET"}) // 서버통신 // fetch 문법 나중에~ 나온거
+            // 👉동기시점
+            .then((resp)=>{ // 응답한내역 전체!
+            // => 📢응답한 내역 어떤 형식으로 처리할건지 파싱을 정해야한다 => resp.text() 또는 resp.json())
+              if(resp.status==200) { // 응답한 내역의 상태 200 == 서버 통신 성공!
+                  // return resp.text()  // 👉 resp.text() : 응답한 내역을 문자열로 처리하는 Promise 를 반환
+                  return resp.json(); // 프라미스를 반환
+                  //  👉 resp.json(): 응답한 내역을 문자열로 처리하고 Object 로 파싱 처리하는 Promise 를 반환
+                  // 프라미스를 반환하면 then 을 연속으로 쓸수 있다. => 🍒프라미스 체이닝 가능
+              } else {
+                  console.log(resp);
+                  alert("통신 실패 " + resp.status);
+              }
+            }).then((empList)=>{ // 🍒empList == resp.json()
+                // then((resp)=>{}) 에서 처리한 내역이 넘어온다 empList json문자열
+                // resp.json() 오브젝트로 파싱한 것이 empList 로 담긴것. empList 는 매개변수 이름
+                // console.log(empList);
+                empListCont.innerHTML=(empList); // toString 출력됨
+                console.log(empList);
+            }); // empList 처리된 내역
+  }
+</script>
+    <h2> XMLHttpRequest 의 프라미스화</h2> <!-- 호출하면 프로미스를 반환 -->
+    <h3>
+        <a href="javascript:void(0)" id="loadImgListBtn"> <!-- a태그 버튼으로 쓰기 : 이동을 막기(javascript:void(0)) -->
+            프라미스화 한 함수로 ajax/imgList.html 불러오기
+        </a>
+    </h3>
+    <div id="imgCont"></div>
+<script>
+  loadImgListBtn.onclick=function(e){
+      // fetchApi("ajax/imgList2.html") // 주소 에러 -> catch 에서 오류처리
+      fetchApi("ajax/imgList.html")
+          .then((responseText)=>{
+              // console.log(responseText);
+              imgCont.innerHTML=responseText;
+          }).catch((errorMsg)=>{ // 주소가 잘못된 경우, then 콜백함수 호출이 실패했을때, then 의 두번째 콜백함수(reject) 또는 catch 에서 예외처리
+          alert("호출실패 " + errorMsg);
+      });
+      // 📢실제 fetch 함수에는 reject 를 정의하지 않고 있다. catch문 이 없다. => if문 조건문으로 에러처리 해준다.
+  }
+  // fetch 함수안에서 실제로 동작하는 과정
+  function fetchApi(url, method="GET"){ // 매개변수로 url을 받아온다 // method GET 방식으로 기본값 주기
+      return new Promise((resolve, reject)=>{ // 프로미스화 : 프로미스 객체를 반환
+          const req=new XMLHttpRequest(); // req.readState==0 // 통신단계0
+          req.open(method, url); // 통신준비! // req.readState==1
+          req.onload=function(e) { // 통신완료! // req.readState==4 : 응답 내역을 모두 처리했을 때(완료)
+              if(req.status==200) { // 200 통신에 성공했을 때 == resolve
+                  let responseText=req.responseText; // 받은 문서가 온다
+                  resolve(responseText); // 🍋동기화 시점
+              } else { // 통신상태가 200이 아닌 모든 경우 // 404 : 요청한 url 리소스(자료)가 없는 것 / 500 : 요청한 리소스에 오류가 있는 상태
+                  reject(new Error(req.status+"오류")); // reject + new Error 코드 // new Error 쓰는 이유? then 두번째 콜백함수(reject) 또는 catch 에서도 오류를 잡을 수 있다.
+              }
+          }
+          req.send(); // 통신시작! // req.readState==1.5 쯤 된다. 1.5는 없음 그냥 설명하려고 대략 표현한것
+          // req.readState==2 : 서버가 응답 헤더(상태)를 받았을 때 (이 과정은 눈에 보이진 않는다 - 통신하고있는 단계)
+          // req.readState==3 : 서버에서 모든 응답을 완료했을 때 (이 과정은 눈에 보이진 않는다 - 통신하고있는 단계)
+      })
+  }
+</script>
+
+    <h3>과제****) dept 리스트를 json 으로 반환하는 서블릿(L19EmpListJson 참고)을 만들고 ajax 로 호출하세요</h3>
+    <p>
+        <h3>AJAX 호출하는 방법</h3>
+        <button id="loadDomBtn1">XMLHttpRequest 로 호출</button>
+        <button id="loadDomBtn2">XMLHttpRequest 의 프라미스화로 호출</button>
+        <button id="loadDomBtn3">fetch 로 호출</button>
+    </p>
+    <table>
+        <thead>
+        <tr>
+            <th>부서번호</th>
+            <th>부서이름</th>
+            <th>지역명</th>
+        </tr>
+        </thead>
+        <tbody id="deptTbody"></tbody>
+    </table>
+  <script>
+    const loadDeptBtn1=document.getElementById("loadDomBtn1");
+    const loadDeptBtn2=document.getElementById("loadDomBtn2");
+    const loadDeptBtn3=document.getElementById("loadDomBtn3");
+    const deptTbody=document.getElementById("deptTbody");
+
+    // 1. 문제 /////////////////////////////////////////////////////////////
+    function printDeptList(deptList){
+        let html="";
+        deptList.forEach((dept)=>{
+            html+="<tr>";
+            for(let key in dept) {
+                html+=`<td>${dept[key]}</td>`
+            }
+            html+="</tr>";
+        })
+        deptTbody.innerHTML=html;
+    }
+
+    loadDeptBtn1.onclick=loadDept;
+    function loadDept(){
+        const req= new XMLHttpRequest();
+        let url="deptListJson.do";
+        req.open("GET",url);
+        req.onload=function() {
+            let deptListJson=req.responseText;
+            const deptList=JSON.parse(deptListJson);
+            printDeptList(deptList);
+        }
+        req.send();
+        // alert(url);
+    }
+
+    // 2. 문제 ///////////////////////////////////////////////////
+    loadDeptBtn2.onclick=function(e){
+        fetchApi("deptListJson.do") // method 기본값 GET방식 적용
+            .then((responseText)=>{
+                const jsonObj=JSON.parse(responseText);
+                printDeptList(jsonObj);
+            }).catch((errorMsg)=>{ // then 콜백함수 호출이 실패했을때, 예외처리
+            alert("호출실패 " + errorMsg);
+        });
+        // 실제 fetch 함수에는 reject를 정의하지 않고 있다. catch문 이 없다. => if문 조건문으로 에러처리 해준다.
+    }
+    // fetch 함수안에서 실제로 동작하는 과정
+    function fetchApi(url, method="GET"){ // 매개변수로 url을 받아온다 // method GET 방식으로 기본값 주기
+        return new Promise((resolve, reject)=>{
+            const req=new XMLHttpRequest(); // req.readState==0 // 통신단계0
+            req.open(method, url); // 통신준비 // req.readState==1
+            req.onload=function(e) {
+                if(req.status==200) { // 통신에 성공했을 때
+                    let responseText=req.responseText; // 받은 문서가 온다
+                    resolve(responseText);
+                } else { // 통신상태가 200이 아닌 모든 경우 // 404 : 요청한 url 리소스(자료)가 없는 것 / 500 : 요청한 리소스에 오류가 있는 상태
+                    reject(new Error(req.status+"오류")); // new Error 코드를 보내야
+                }
+            } // req.readState==4 : 응답 내역을 모두 처리했을 때(완료)
+            req.send(); // 통신시작 // req.readState==1.5 쯤 된다. 1.5는 없음 그냥 설명하려고 대략 표현한것
+            // req.readState==2 : 서버가 응답 헤더(상태)를 받았을 때 (이 과정은 눈에 보이진 않는다 - 통신하고있는 단계)
+            // req.readState==3 : 서버에서 모든 응답을 완료했을 때 (이 과정은 눈에 보이진 않는다 - 통신하고있는 단계)
+        })
+    } // fetchApi 함수
+
+
+    // 3. 문제 ///////////////////////////////////////////////////
+    loadDeptBtn3.onclick=loadDeptJson;
+    function loadDeptJson(){
+        // fetch 는 호출하면 프라미스를 반환한다 : 프라미스화! // 새로운 정보를 받아온다 (네트워크요청) -> 새로 고침 없이 가능! AJAX 비동기 통신 // AJAX 는 춘추전국시대에 익스플로러가 만든것. 현재는 다른곳에서 만든 AJAX 를 사용
+        fetch("deptListJson.do", {method:"GET"}) // fetch 문법 나중에~ 나온거
+            .then((resp)=>{ // resp : 응답한내역 전체 (* 응답한 내역 어떤 형식으로 처리할건지 정해야한다 => resp.text() 또는 resp.json())
+                // resp.text() // 응답한 내역을 문자열로 처리하는 Promise
+                if(resp.status==200) {
+                    return resp.json(); // 오브젝트로 파싱한 것 // 응답한 내역을 문자열과 Object 로 변환 처리하는 Promise
+                    // 프라미스를 반환하면 then 을 연속으로 쓸수 있다. => 프라미스 체이닝 가능
+                } else {
+                    console.log(resp);
+                    alert("통신 실패 " + resp.status);
+                }
+            }).then((deptList)=>{ // resp.json() 오브젝트로 파싱한 것이 empList로 담긴것.
+            printDeptList(deptList);
+        });
+    }
+
+
+
+
+
+
+
+
+
+    // function loadDeptListJson(){
+    //     // fetch 는 호출하면 프라미스를 반환한다 : 프라미스화! // 새로운 정보를 받아온다 (네트워크요청) -> 새로 고침 없이 가능! AJAX 비동기 통신 // AJAX 는 춘추전국시대에 익스플로러가 만든것. 현재는 다른곳에서 만든 AJAX 를 사용
+    //     fetch("deptListJson.do", {method:"GET"}) // fetch 문법 나중에~ 나온거
+    //         .then((resp)=>{ // resp : 응답한내역 전체 (* 응답한 내역 어떤 형식으로 처리할건지 정해야한다 => resp.text() 또는 resp.json())
+    //             // resp.text() // 응답한 내역을 문자열로 처리하는 Promise
+    //             if(resp.status==200) {
+    //                 return resp.json(); // 오브젝트로 파싱한 것 // 응답한 내역을 문자열과 Object 로 변환 처리하는 Promise
+    //                 // 프라미스를 반환하면 then 을 연속으로 쓸수 있다. => 프라미스 체이닝 가능
+    //             } else {
+    //                 alert("통신 실패 " + resp.status);
+    //             }
+    //         }).then((deptList)=>{ // resp.json() 오브젝트로 파싱한 것이 empList로 담긴것.
+    //         // console.log(empList);
+    //         deptCont.innerHTML=(deptList); // toString 출력됨
+    //     }); // empList 처리된 내역
+    // }
+
+
+</script>
+
+
+  <script>
+
+  </script>
+
+
+
+
+
+
+<script>
+  // 통신은 여러단계가 있다
+  // 브라우저가 서버에 자료가 있는지 요청
+  // 서버가 가지고 있다고 먼저 응답을 한다 (데이터 주기전) 자료가 있고, 연결이 됬다 라는 걸 알려준다. 응답한다. == 응답헤더
+  // => 아직 본문이 도착하기전.
+  // 성공하면 네트워크 status - 200
+  // 실패하면 서버에는 도달했는데 리소스(페이지)가 없는 경우 네트워크 status - 404
+  // 코드에 오류가 발생하면 밑에 코드는 실행하지 않는다. (개발자 잘못) 네트워크 status - 500
+  // => 오류가 발생하면 톰캣이 예외 처리해서 500이라는 상태를 반환(서버내부오류!)=> 해결방법 오류를 try catch 문에 넣으면 된다
+  // 네트워크 status 메세지는 톰캣이 보내주는것!
+
+
+  // 톰캣(웹앱서버)에 웹앱(문서. 동적리소스. 개발자가 만든것)을 올리면 => 톰캣이 웹앱을 실행
+  // 실행하면서 발생하는 오류들 => 조건문으로 활용할 수 있다.
+  // 100번대 ()
+  // 200번대 (성공)
+  // 300번대 (리다이렉션)
+  // 400번대 (서버에서 일처리할때 생기는 오류) - 유저가 무언가를 요청을 했는데 요청을 처리할 수 없는경우 / 리소스가 없는 경우 등 + 웹앱과 상관없는 톰캣에서 발생한 오류도 포함
+  // 500번대 (개발자가 잘못한 오류)
+
+  // 데이터통신이 넘어간다 text, json,img, mp3 0101010 전기적신호 - 파동으로 넘어간다
+  // 응답을 받은 데이터는 01101010101 -> text
+  // blob - text
+  // text 로 한후에 다시 오브젝트로 바꾸는것 JSON
+  // 응답 종류 - response.text(), response.json()
+  // XMLHttpRequest : http 통신을 요청하는것
+  // .open() : http 통신 초기화. 통신 준비하는것
+  // .send() : 통신하는 것. 비동기식. 멀티스레드를 만든다.
+  // onload() : 통신이 발생한 시점
+  // new URL : 파라미터를 url 인코딩시켜준다
+
+  // 통신(XMLHttpRequest)에 단계가 있다
+  // new XMLHttpRequest() : 객체 안을 0 으로 초기화
+  // 1. 객체르 만들었을때 HEreq.send() : 나 데이터주세요 하고 요청. 서버가 데이터 줄게있다고 상태를 응답한다. 010101010....
+  // header 2 - 응답할 데이터가 있어
+  // 3 - LOADING xml을 받았어. 모두 받음
+  // 4 - DONE = xml 을 텍스트(문자열 또는 json)로 변환을 해 (== onload). 처리가 완료됨
+
+  // CROS : 다른서버에 요청하면 요청 실패를 할 수 있다. - 크로스오리진요청
+  // 도메인이나, 포트가 다른곳에 요청을 보내는 것을 크로스 오리진 요청이라 한다.
+  // Port 컴퓨터에서 앱을 실행할때마다 주는 번호
+  // IP - 노드서버, 톰캣서버, PHP 서버 등.. 서버를 여러개를 구동할수있다. 서버컴퓨터가 같다고 해서 다른 포트에 (접근할수 없다)
+  // 같은 포트(서버)에서만 접근이 가능
+  // => 인터넷을 보호하기 위해 만들어짐 ex) 네이버의 서버를 계속 사용하는것 서버가 계속 일을한다  - 계속 통신하는것
+
+</script>
+</body>
+</html>

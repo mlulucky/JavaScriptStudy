@@ -5,133 +5,306 @@
     <title>비동기식 통신 ajax</title>
 </head>
 <body>
-    <h1>Asynchronous JavaScript And XML</h1>
-    <p>자바스크립트로 xml을 비동기식 통신으로 불러오는 것!</p>
+    <h1>Asynchronous JavaScript And XML</h1> <!-- Asynchronous : 비동기 -->
+    <p>자바스크립트로 xml 을 비동기식 통신으로 불러오는 것!</p>
     <ul>
-        <li>http 통신에서 동기식이란? : 브라우저가 url 로 요청한 페이지 1개를 로드하는 것(일반적)</li> <!-- 브라우저가 url 로 요청한 페이지 : 톰캣서버에 있는 리소스를 요청하는 것 // http 통신은 기본적으로 웹서버가 있다. 그안에 동적리소스 정적리소스 등이 있다. 둘다 html로 반환된다. html을 요청하는 것 -->
-        <li>http 통신에서 비동기식이란? : 브라우저가 로드한 페이지에서 다른 페이지를 요청하는 것(특수) - AJAX</li> <!-- // 능률적이다. 네이버 회원가입시 아이디검사할때, 체크하는 페이지를 회원가입페이지 내부로 가지고 있다. -->
-        <li>xml : 비동기식 통신에서의 xml 은 html 문서를 의미한다.</li> <!-- xml 은 html 의 부모. 태그로 되어있는게 모두 xml/ html 은 규정되어있는거 -->
-        <li>자바스크립트로 비동기식 통신 : js의 XMLHTTPRequest 객체가 비동기식 통신을 하도록 지원한다. </li>
-        <li>AJAX : 자바스크립트로 비동기식 통신을 하면 AJAX 라고 부른다.</li>
+        <li>http 통신에서 동기식 통신이란? : 브라우저가 url 로 요청한 그 페이지 1개를 로드하는 것(일반적)</li> <!-- 브라우저가 url 로 요청한 페이지 : 톰캣서버에 있는 리소스를 요청하는 것 // http 통신은 기본적으로 웹서버가 있다. 서버 안에는 동적리소스, 정적리소스 들이 있다. 둘다 html 로 반환된다. html을 요청하는 것 -->
+        <li>http 통신에서 비동기식 통신이란? : 브라우저가 로드한 페이지에서 다른 페이지를 요청하는 것(특수) - AJAX</li> <!-- // 능률적이다. 네이버 회원가입시 아이디검사할때, 체크하는 페이지를 회원가입페이지 내부로 가지고 있다. -->
+        <li>xml : 비동기식 통신에서의 xml 은 html 문서를 의미한다.</li> <!-- xml 은 html 의 부모. 태그로 되어있는게 모두 xml / html 은 규정되어있는거  & http 통신에서 사용-->
+        <li>자바스크립트로 비동기식 통신 : js의 XMLHTTPRequest 객체가 비동기식 통신(AJAX)을 하도록 지원한다. </li>
+        <li>AJAX(Asynchronous JavaScript And XML) : 자바스크립트로 비동기식 통신을 하면 AJAX 라고 부른다.</li>
     </ul>
     <h2>AJAX 의 등장이유?</h2>
     <ul>
-        <li>한개의 url 의 문서를 1번 로드(저장)하는 브라우저의 인터페이스가 불편해서 등장</li>
-        <li>작은 데이터를 얻기위해 전체 페이지를 로드하는 것이 비효율적(비용)이라서</li> <!-- ex) 네이버 회원가입 시 아이디 중복체크할때 아이디를 검사할 전체페이지가 필요함 -->
-        <li>문서를 요청할 때마다 중복되는 리소스를 매번 다운로드 받는다(비용증가, 브라우저가 캐쉬로 저장을 해서 조금 만회하는 중)</li> <!-- 페이지의 기본고정 - 로고, 메뉴, 등등.. => 중복되는 리소스 -->
-        <li>유저 인터페이스를 편하게 하고 비용을 절감한다</li> <!-- 문서요청 -> 서버간 통신 -> 그때마다 트래픽 발생 -> 클라이언트가 다운받는 게 많을 수록 트래픽 증가할수록 통신회사에서, 서버회사에서 돈을 많이내라고 한다 - 통신회사 ex) kt, lg유플러스 -->
+        <li>한개의 url 이 문서를 1번로드(동기식) 하는 브라우저의 인터페이스가 불편해서 등장(**서버 사이드 렌더링)</li> <!-- 동기식 -->
+        <li>작은 데이터를 얻기위해 전체 페이지를 로드하는 것이 비효율적(비용)이라서</li> <!--  동기식 ex) 네이버 회원가입 시 아이디 중복체크할때 아이디를 검사할 전체페이지가 필요함 => 비효율적 -->
+        <li>문서를 요청할 때마다 중복되는 리소스를 매번 다운로드 받는다(비용증가, 브라우저가 캐쉬로 저장을 해서 조금 만회하는 중)</li><!-- 동기식 : 다른 페이지지만 똑같은 리소스를 매번 다운 받는다 // 검사창 네트워크에서 서버에서 다운받은 리소스를 확인 가능 --> <!-- 페이지의 기본고정 - 로고, 메뉴, 등등.. => 중복되는 리소스 -->
+        <li>유저 인터페이스를 편하게 하고(화면전환 X) 비용을 절감한다</li> <!-- 리소스(문서)요청 -> 서버간 통신 -> 그때마다 트래픽(==돈) 발생 -> 클라이언트가 다운받는 게 많을 수록 트래픽 증가할수록 통신회사에서, 서버회사에서 돈을 많이내라고 한다 - 통신회사 ex) kt, lg유플러스 -->
     </ul>
     <p>
-        <button id="loadDomBtn">ajax/imgList.html 문서 불러오기</button> // 문서가 로드됬는데 다른 문서를 불러오는 것
+
+        <button id="loadDomBtn">ajax/imgList.html 문서 불러오기</button>
+        <!-- AJAX 통신(비동기식) : 화면 새로고침 없이 다른 페이지를 불러 오는 것 -->
     </p>
     <div id="ajaxContainer" style="border: 1px solid">
     </div>
     <script>
         loadDomBtn.onclick=function (e) {
-            let url="ajax/imgList.html"; // 404 에러 페이지는 톰캣이 주는것.
-            const req=new XMLHttpRequest(); // 다른 페이지를 요청
-            req.open("GET", url); // open() 준비단계 셋팅작업 // 양식 제출 : POST , url 제출 : GET
-            req.onload=function(e){ // request 가 성공한 시점이 onload 이다. // onload == onclick 과 같은 역할. 이벤트가 발생한 시점
-                // onload :
-                // 통신에 성공했을때(이벤트) 실행되는 콜백함수를 정의 (왜? 몇초만에 받아올지 알 수 없기 때문에)
+            // let url="l14_emp_list.do"; // 동적페이지도 불러올 수 있다. // 동적페이지도 html 을 반환한다 // 불러오고 싶은 문서. url
+            let url="ajax/imgList.html"; // 불러오고 싶은 문서. url // 404 에러 페이지는 톰캣이 주는것.
+            const req=new XMLHttpRequest(); // 비동기식 통신 객체 생성 // AJAX 통신 // 다른 페이지를 요청(request)
+            req.open("GET", url); // 어떤 방식으로 요청할 것인가 // 준비단계 // 양식(form) 제출 : POST , url 제출 : GET
+            req.onload=function(e){ // response // request 가 성공한 시점이 onload 이다.
+                // 📍통신하는 그 시점에서 바로 문서를 불러온다
+                // 📍onload : 통신에 성공했을때 실행되는 콜백함수 (왜? 몇초만에 받아올지 알 수 없기 때문에)
+                // onload 콜백함수 정의하기! // onload == onclick 과 같은 역할. 이벤트가 발생한 시점
                 // 통신에 걸린 시간이나 어떤 통신인지에 대한 내역을 포함
                 // console.log(e); // e 는 event 정보
                 // console.log(req.responseText);// 받아온 문서(통신의 내역)를 문자열로 반환한것
-                ajaxContainer.innerHTML=req.responseText;
+                ajaxContainer.innerHTML=req.responseText; // 불러온 문서(url)를 html 에 출력!
+                // console.log(req.responseText);
             }
+            req.send(); // request // 해당 url의 문서를 불러온다
+            // url(리소스, 문서) 요청 // 검사창 네트워크에서 다운받아지는 리소스(문서)확인 가능
 
-            req.send(); // 해당 url의 문서를 불러온다.(실제호출) -> 성공이벤트가 발생하길 기다린다. 성공시점(onload). 성공이벤트가 onload=function(){} // 브라우저가 서버에 문서를 요청. // 요청해서 도착한 시점 이 onload.
-            // 문서를 요청하면 받아오는데 까지 시간이 조금 걸린다..
-            // setTimeout 으로 시간을 지정하는 방식 -> 컴퓨터마다 다르다. -> ***언제 받아오는지 알 방법이 없다. => 성공한 시점에서 받아오는 게 좋다!! onload
-            // setTimeout(()=>{
-            //     console.log(req.responseText);// 불러온 문서의 문자열 // 양식 제출 : POST , url 제출 : GET
-            // },2); //
-
+            // 📍req.send();
+            // 통신이 성공하길 기다린다. 성공시점(onload) // 브라우저가 서버에 문서를 요청. // 요청해서 도착한 시점 이 onload.
+            // 문서를 요청하면 받아오는데 까지 시간이 조금 걸린다(화면에 바로 출력x)
+            // setTimeout 으로 시간을 지정하는 방식 -> 컴퓨터마다 다르다.
+            // setTimeout(()=>{ -> 📍***언제 받아오는지 알 방법이 없다.
+            //     console.log(req.responseText);// 불러온 문서(url)의 문자열
+            // },50);
+            //  => 통신이 성공한 시점에서 받아오는 게 좋다!! 🍋onload
         }
     </script>
-    <form name="signupForm" action="/a.html">
+    <!-- 아이디 체크 -->
+    <form name="signupForm"> <!-- 폼태그 엔터쳤을때 새로고침 방지 : onsubmit="return false; Ajax 로 form 을 submit 할 때 새로고침 방지 -->
         <div>
             <p> <!--// 입력하는 거 oninput // 값을 입력하고 바깥을 클릭하면 발생하는 이벤트 onchange -->
                 <label>id :
-                    <input name="userId" placeholder="id를 입력하세요">
+                    <input name="userId" placeholder="id를 입력하세요"/>
                 </label>
             </p>
             <p id="userIdMsg"></p>
         </div>
     </form>
     <script>
-        const signupForm=document.forms["signupForm"];
-        signupForm.userId.onchange=function(e){
+        const signupForm=document.forms["signupForm"]; // 폼태그 선택 // forms["폼태그이름"]
+        signupForm.userId.onchange=function(e){ // onchange(이벤트)시 실행 // userId 태그의 onchange(이벤트) 콜백함수 정의 // userId == <input name="userId">
+            // 입력받은 아이디가 중복되었는지 서버에 물어본다 => idCheck.json 페이지
             let val=this.value; // this 는 userId
-            // 입력받은 아이디가 중복되었는지 서버에 물어본다
-            let url="ajax/idCheck.json"; // id체크하는 서버의 url. 동적페이지. 결과(true,false)가 항상 바뀐다. 결과가 true 면 멋진아이디. false면
-            const req=new XMLHttpRequest(); // 통신하는 객체 //다른페이지를 요청
+            // alert("입력값 " + val);
+            // 📍onchange 했을때, AJAX 통신. 리소스(url) 불러온다. // 검사창 네트워크에서 확인가능
+            let url="ajax/idCheck.json"; // id 체크하는 서버의 url. 동적페이지. 결과(true,false)가 항상 바뀐다. 결과가 true 면 멋진아이디. false면
+            const req=new XMLHttpRequest(); // AJAX 통신 // 통신하는 객체 //다른페이지를 요청
             req.open("GET",url); // 호출방식 셋팅
             // => emp.empno 가 중복되어 있는지 확인하는 동적페이지를 작성하면 된다! // idCheck.json 파일 위에 L14EmpList 파일과같은 내역이 있는것이다. (눈에는 안보이지만)
-            req.onload=function(e) { // 호출되는 시점에서 발생되는 이벤트
-                let jsonStr=req.responseText; // 요청한 문서 let url 주소란에 넣은 주소. 문자. 를 문자열로 해석 응답받은 문서
-                const checkObj=JSON.parse(jsonStr);
+            req.onload=function(e) { // 통신성공 -> 호출되는 시점에서 발생되는 이벤트
+                // 📍불러온 문서(url)의 문자열 == JSON
+                let jsonStr=req.responseText; // 요청한 문서를 문자열로 해석 // 불러온 문서(url)의 문자열 // 문자열로 해석 응답받은 문서
+                console.log(jsonStr); // 🍋`{"check" : false}` // (문자열)
+                // 📍JSON 문자열 Object 로 형변환
+                const checkObj=JSON.parse(jsonStr); // 오브젝트 {"key":value}
                 // JSON.parse() : 문자열인 json을 Object 로 형변환 하는 함수
-                console.log(jsonStr);
-                console.log(b.check);
-                let a = `{"age":37, "check" : false, "id":"ckm"}`; // => jsonStr : 문자열. 문자열에서 값을 찾을수. 없다.
-                let b={check:false} // 오브젝트를 형변환 하여. 값을 출력할 수 있게 된다.
-
-                // `{오브젝트}`
-                console.log(checkObj);
-
-
+                // JSON == 문자열로 된 오브젝트 명세서
+                console.log(checkObj); // 🍋{check: false} // (오브젝트)
+                // 📍아이디 중복체크
                 let msg=(checkObj.check)?"멋진 아이디" : "사용중인 아이디";
+                // checkObj 의 check(참조키,필드)가 true 이면 멋진 아이디 / false 이면 사용중인 아이디
                 userIdMsg.innerText=msg;
+
+                //🍋 JSON 문자열. 오브젝트
+                // let a = `{"check" : false}`;
+                // => jsonStr : 문자열. 문자열에서 값을 찾을수. 없다.
+                // let b={check:false} // 오브젝트를 형변환 하여. 값을 출력할 수 있게 된다.
+                // console.log(b.check);
+                // JSON == 오브젝트를 문자열로 표현한 것 // {} 오브젝트 // "key" : value
+
             }
-            req.send();
+            req.send(); // request // 해당 url의 문서를 불러온다
+            // url(리소스, 문서) 요청
         }
     </script>
 
-    <ul>
+    <h2>
+        personList.json 을 AJAX 로 불러와서 table 로 출력해보자~
+        <button id="personListLoadBtn">로드</button>
+    </h2>
+    <table>
+        <thead>
+            <tr>
+                <th>이름</th>
+                <th>태어난해</th>
+                <th>직업</th>
+                <th>결혼</th>
+            </tr>
+        </thead>
+        <tbody id="personTbody">
+        </tbody>
+    </table>
+    <script>
+        personListLoadBtn.onclick=personListLoad;
+        function personListLoad(){
+            // alert("로드 준비중~");
+            const req=new XMLHttpRequest(); // req 요청(request) // AJAX 통신 - 비동기식 통신 // 브라우저 춘추전국시대 등장~! - 비동기식 통신 - 최초에는 익스플로어가 . 현재는 크롬
+            // req.open("GET","http://naver.com"); // 준비단계 - 통신방법설정
+            // => CORS Access Control Allow Origin - 네이버페이지 요청할수없다 => 서버에서 불러오는 것은 본인(origin)만 주고받은 서버에서만 페이지를 받아올 수 있다. 클라이언트가 다른쪽 서버 자료를 요청할 수 없다.  - AJAX 접속 정상통신방법 // CORS 풀 수 있는 방법은 있다
+            // req.open("GET","http://localhost:8080/JavaScriptStudy/ajax/personList.json"); // 풀주소(절대주소) 써도 된다. // 준비단계 - 통신방법설정 // 절대경로(주소)
+            req.open("GET","./ajax/personList.json"); // 검사창 네트워크에 파일이 불러와진다. // 준비단계 - 통신방법설정 // 상대주소로 입력
+            // 불러온 것을 통신하는데.
+            req.onload=function(e) { // onload : 로드된 시점에서 이벤트 실행 (콜백함수를 호출) 불러온다. 데이터불러오기 + 화면에 출력하기 할수있다.
+                // ◆ 데이터 불러오기 + 테이블 화면 출력
+
+                // ◆ 데이터 불러오기
+                let respText=req.responseText; // 불러온 문서(url)의 문자열 // 문자열인 JSON 을 받았다
+                // => 📍JSON 은 객체를 문자열로 표현한것이기 때문에 다시 객체가 될 수 있다.
+                let personList=JSON.parse(respText); // JSON.parse() : JSON 을 Object 로 변환하는 함수(🍋JSON 을 쓰는 이유!!)
+                console.log(personList);
+                // Object 반복문 (자바에서는 불가능!!)
+                // 📍in 연산자 : 객체에 해당 키가 있는지 확인하는 연산자 // 키를 검사하는 연산자
+                // for(let 참조key in personList) {} // p에 담긴 참조키를 뽑아서 let key에 담는다.
+
+               // ◆ 테이블로 화면에 출력하기
+                let tableStr="";
+                personList.forEach((p)=>{ // 📍반복문 하나가 tr
+                    tableStr+="<tr>";
+                   for(let key in p){ // 📍반복문 하나가 td // for in list 반복문 : 배열의 요소만큼 반복문.  참조 key로 값을 구할 수 있다.
+                       tableStr+=`<td>${p[key]}</td>`;
+                       // console.log(key,p[key]);
+                   }
+                   tableStr+="</tr>";
+                });
+
+                personTbody.innerHTML=tableStr;
+                // innerHTML : 문자열인 html 을 node 로 생성해서 추가해주는 필드
+            }
+            req.send(); //
+            // setTimeout(()=>{ // 대신 onload 방식으로 불러오기!!
+            //     console.log(req.responseText); // 문자열로 통신한 내역 // 통신한 내역이 문자열로 들어온다.
+            // },5);
+        }
+    </script>
+    <h2>동적페이지(서블릿)를 JSON 으로 반환하고 AJAX로 통신해 보자</h2>
+    <!--    1. 동기식으로 페이지 불러오기 : 페이지 주소 URL 변환 -->
+    <p><a href="empListJson.do">동기식으로 페이지 불러오기</a></p>
+<!--    <p><a id="loadEmpBtn" href="javascript:void(0)" data-url="empListJson.do">비동기식으로 모든사원 불러오기</a></p> &lt;!&ndash; a태그를 누르면 javascript로 동작하겠다 void 로 동작을 막겠다&ndash;&gt;-->
+
+    <!--    2. 비동기식으로 페이지 불러오기 : 페이지 주소 URL 변환(X), 그 안에 데이터만 불러오는 것-->
+    <p>
+        <a class="loadEmpBtn" href="javascript:void(0)" data-url="empListJson.do">
+            비동기식으로 모든사원 불러오기
+        </a>
+    </p> <!-- a태그를 누르면 javascript로 동작하겠다 void 로 동작을 막겠다-->
+    <!--    data-* : 유저가 정의하는 속성-->
+    <p>
+        <a class="loadEmpBtn" href="javascript:void(0)" data-url="empListJson.do?deptno=10">
+            비동기식으로 10번 부서 사원 불러오기 // 물음표 뒤에오는 것 쿼리스트림(묻는(질의하는) 문자열). deptno=10 에서 10은 파라미터
+        </a>
+    </p> <!-- a태그를 누르면 javascript로 동작하겠다 void 로 동작을 막겠다-->
+    <p>
+        <a class="loadEmpBtn" href="javascript:void(0)" data-url="empListJson.do?deptno=20">
+            비동기식으로 20번 부서 사원 불러오기
+        </a>
+    </p>
+    <p>
+        <a class="loadEmpBtn" href="javascript:void(0)" data-url="empListJson.do?deptno=30">
+            비동기식으로 30번 부서 사원 불러오기
+        </a>
+    </p>
+    <!-- a태그 : anchor 닻. 배타고 여행하는거-->
+    <!-- data-* : 유저가 정의하는 속성. 속성으로 숨겨놓는거 // 비동기식으로 불러오는 경우 a태그 void로 막아야 한다(페이지 이동막기)-->
+    <h3>사원 리스트</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>사번</th>
+                <th>이름</th>
+                <th>직책</th>
+                <th>급여</th>
+                <th>부서</th>
+            </tr>
+        </thead>
+        <tbody id="empTbody"></tbody>
+    </table>
+    <script>
+        <!--   data-url  empListJson.do 페이지를 불러와서 데이터를 출력하기!-->
+        const loadEmpBtn=document.getElementById("loadEmpBtn");
+        const loadEmpBtns=document.getElementsByClassName("loadEmpBtn"); // HTMLCollection 옛날 리스트. forEach 안됨 // 복수의 태그들이 선택 -> 배열 [a,a,a,a...]
+        const empTbody=document.getElementById("empTbody");
+        for(const loadEmpBtn of loadEmpBtns) { // 모든 버튼에 onclick 함수 적용
+            loadEmpBtn.onclick=loadEmp; // 함수 호출 (함수실행 x)
+        }
+
+        function loadEmp(){
+            let url=this.dataset.url; // dataset : data 로 정의한 속성을 .으로 가져올 수 있다. // dataset.url : data-url 을 불러온다 == empListJson.do
+            // alert(url); // 체크
+            const req= new XMLHttpRequest();  // 1. AJAX 통신 // XMLHttpRequest 객체 : 웹 브라우저가 내장하고 있는 객체로 서버에 데이터를 요청. 서버로부터 XML 데이터를 전송받아 처리
+            req.open("GET", url); // 1. 불러오는 방식 셋팅
+            req.onload=function(){ // 3. onload 불러와서 성공한 시점
+                let empListJson=req.responseText;  // 💎responseText : 통신에서 요청한 문서(url)를 문자열로 응답받는 문서 // 요청하여 응답받은 문자열(JSON)
+                const empList=JSON.parse(empListJson); // JSON.parse : 문자열인 json 을 Object 로 형변환 하는 함수 // JSON 문자열을 오브젝트로 변경
+                // console.log(empListJson);
+                // console.log(empList); // 체크
+                printEmpList(empList); // 테이블 출력 함수실행
+            }
+            req.send(); // 2. 통신 시작! // 검사창 네트워크에서 확인할 수 있다.
+        }
+        // empList - 부서번호가 10인 테이블, 20인 테이블, 30인 테이블, 전체테이블
+        // [{"empno":0,"ename":"스미스","job":"null","sal":0.0,"depno":0},{"empno":2222,"ename":"은정","job":"","sal":9999.0,"depno":0},{"empno":7369,"ename":"SMITH","job":"CLERK","sal":800.0,"depno":30},{"empno":7521,"ename":"WARD","job":"SALESMAN","sal":1250.0,"depno":30},{"empno":7566,"ename":"JONES","job":"MANAGER","sal":2975.0,"depno":20},{"empno":7654,"ename":"MARTIN","job":"SALESMAN","sal":1250.0,"depno":30},{"empno":7698,"ename":"BLAKE","job":"MANAGER","sal":2850.0,"depno":30},{"empno":7782,"ename":"CLARK","job":"MANAGER","sal":2450.0,"depno":10},{"empno":7788,"ename":"SCOTT","job":"ANALYST","sal":3000.0,"depno":20},{"empno":7839,"ename":"KING","job":"PRESIDENT","sal":5000.0,"depno":10},{"empno":7844,"ename":"TURNER","job":"SALESMAN","sal":1500.0,"depno":30},{"empno":7876,"ename":"ADAMS","job":"CLERK","sal":1100.0,"depno":20},{"empno":7900,"ename":"JAMES","job":"CLERK","sal":950.0,"depno":30},{"empno":7902,"ename":"FORD","job":"ANALYST","sal":3000.0,"depno":20},{"empno":7934,"ename":"MILLER","job":"CLERK","sal":1300.0,"depno":10}]
+
+        // 테이블 출력을 함수로 하기
+        function printEmpList(empList) { // empList : empJson 문자열 의 객체 // 테이블의 문자열로 출력해주는 함수
+            let html="";
+            empList.forEach((emp)=>{ // empList 배열의 요소 emp. // emp : row. 해당테이블의 가로 한줄. 객체(튜플) - ex) 스미스사원
+                html+="<tr>";
+                for(let key in emp) { // ex) 스미스사원 객체 안에 key를 반환. key의 개수만큼 반복
+                    html+=`<td>${emp[key]}</td>`;
+                }
+                html+="</tr>";
+            })
+            empTbody.innerHTML=html;
+            // js에 밖에 없는 것 : for in // Object 일때 하는 방법
+            // for (let i in arr) { // in 은 key를 반환하는데
+
+        }
+
+
+
+    </script>
+
+    <pre>
         xml json 차이점
 
         xml : xml은 태그로 "<check>true</check>"                 // 문자열 인데 형식이 문서이다. // 돔트리를 이용해서 값을 가져오기 위한 목적으로 만들어짐 // 태그 안에 있는 값 // 오브젝트가 될 수 없다. // 마크를 하면  value 를 true 라는 문자열을 가져오기 위한
         json : {check : true} // 오브젝트를 명세서(문자열)로 표현한것 // json 인데 문자열이다      // 문자열을 오브젝트로 만들어서 값을 가져온다
 
-        xml : value 를 문자열로 전달하기 위해 태그로 감싼것. 텍스트 노드
-        돔트리의 마지막 노드는 텍스트 노드 = true 가 문자열인지 타입이 true 인지 알수가 없다.
+        📍xml : 문자열 value 를 전달하기 위해 태그로 감싼것. 👉텍스트 노드
+        돔트리의 마지막 노드는 텍스트 노드 = 👉 true 가 문자열인지 타입이 true 인지 알수가 없다.
+        값이 모두 문자열이다
 
-        json :
-        오브젝트는 문자열 "" 표시를 안하면 문자열을 만들때 boolean 으로 형변환 한다.
+        📍json : 데이터 전송용 문자열 == 오브젝트를 문자열로 표현한것 == 오브젝트 명세서
+        오브젝트는 문자열 "" 표시를 안하면 문자열을 만들때 boolean 으로 형변환 한다. => true -> boolean / "true" -> 문자열
         오브젝트는 타입이 존재한다 -> 문자열, 숫자형, null ..
         타입도 있고, key 도 있고, 배열도 있다.
+        오브젝트의 value 를 선언하기 위해 만들어진 문자열
 
         xml 은 문자열 값만 갖는다 => 텍스트 노드로 돔트래블링으로 찾는다.
 
         json 의 장점?
         문자열의 길이가 짧다(데이터값이 적다)
-        값의 타입이 존재한다. 문자열 뿐 아니라 Number, boolean, 문자열, null... (NaN, function, undefined 등은 안됨)
-        value 검색이 쉽다. -> objec.필드명 으로 찾을 수 있다
+        값의 타입이 존재한다(파싱(형변환)이 가능). 문자열 뿐 아니라 Number, boolean, 문자열, null... (NaN, function, class, undefined 등은 안됨)
+        value 검색이 쉽다. -> object.필드명 으로 찾을 수 있다
         필드명을 잘못 쓰면 파싱오류가 생길수 있다. false -> flase 잘못적으면 형변환 안된다.
 
         -> 데이터 전송용으로 쓴다. 테이블로 쓸수있다.
 
 
-        HTML- 화면을 구조화. 중첩관계 구조화, 화면구성을 정보화 - 처음에는 json 이 없어서 xml을 가져와서 화면을 구성함
+        📍HTML- 화면을 구조화. 중첩관계 구조화, 화면구성을 정보화 - 처음에는 json 이 없어서 xml을 가져와서 화면을 구성함 // 그래서 xml, html 부모자식관계
 
-        * 탄생목적 : 정보전달
+        📍탄생목적 : 정보전달
         xml   - 마크업 / 정보(데이터)를 전달하기 위해
         json  - {} 오브젝트 / 정보(데이터)를 전달하기 위해. 데이터를 오브젝트로 정의하는
 
         브라우저가 서버에 html 파일을 요청
-        서버가 html 파일을 문자열(0101010..)로 변환 및 브라우저에 전송 -> 확장된 문서 html 로 변환 -> 화면 출력
+        서버가 html 파일을 xml, json 문자열로 0101010.. 신호 전달 -> 문자열(xml, JSON)로 변환 및 브라우저에 전송 -> 확장된 문서 html 로 변환 -> 화면 출력
+        길이가 짧은게 통신이 빠르다. (JSON)
 
-
+        📍동적페이지
         동적페이지는 고정되있는 페이지가 아니다
         서버에서 한번 실행되서 매번 값이 바뀐다
         자바파일이 json 을 반환
-        동적페이지가 무엇을 반환하는지에 따라 달라지는것.
+        동적페이지가 무엇을 반환하는지에 따라 달라지는것. -> html. 태그를 반환 할 수 도 json 을 반환 할 수 도
 
+        예) 사원이 10명 추가됬을때, html 을 추가로 만드는게 아니라
+        데이터베이스에 사원 10명 목록을 추가해서, html 로 불러오는 것.
+        예) 조건을 줘서(url 파라미터에) 페이지의 내용을 바꿀 수 있다.
+        한개의 페이지(url)에서 내용을 다르게 할 수 있다.
 
-    </ul>
+        📍서블릿 : 통신에 요청에 응답 하는것
+        HttpServletRequset, HttpServletResponse
 
+        📍JDBC : 서블릿 안에서 DB 통신하는 것
 
-
+    </pre>
 </body>
 </html>

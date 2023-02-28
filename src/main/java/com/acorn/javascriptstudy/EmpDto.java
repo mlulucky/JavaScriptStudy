@@ -16,10 +16,13 @@ package com.acorn.javascriptstudy;
 import java.util.Date;
 
 public class EmpDto {
-    // 디비와 데이터통신할떄 가져오는 자료들을 정리
-
-    // DB 의 자료를 java 에 처리하기 위해 받아오는 역할
-    // 이때 DB 의 타입과 유사한 java 의 type 을 선택해야 한다.
+    // Dto : 디비와 데이터통신할떄 가져오는 자료들을 정리
+    // 데이터 전송용 // DTO Data Transfer Object
+    // 👉DB 의 자료를 java 에 처리하기 위해 받아오는 역할
+    // 👉이때 DB 의 타입과 유사한 java 의 type 을 선택해야 한다.
+    // 👉=> 데이터를 불러올때 타입을 맞춰주는 역할
+    // 테이블 내역을 private 하게. 타입을 자바타입으로. getter,setter => DTO
+    // 👉파라미터의 타입을 명확하게 하므로써 sql injection 해킹을 막는다.
     private  int empno;   // pk
     private String ename; // varchar 문자열 타입
     private String job;
@@ -116,8 +119,9 @@ public class EmpDto {
     }
 
     // alt + insert 자동생성
+    // 미리 정의된 출력구문 toString
     @Override
-    public String toString() {
+    public String toString() { // toString() 출력구문 정의해 놓은 것 : 문자열 출력  -> JSON 으로 바꿔서 출력해야한다.
         return "EmpDto{" +
                 "empno=" + empno +
                 ", ename='" + ename + '\'' +
